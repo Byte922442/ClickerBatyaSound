@@ -3,195 +3,272 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>кликер sonal</title>
+  <title>Sonal Clicker: Mega Edition</title>
   <style>
-    :root { --red: #ff0000; --gold: #ffcc00; --bg: #020202; }
+    :root { 
+      --red: #ff0000; 
+      --gold: #ffcc00; 
+      --glass: rgba(15, 15, 15, 0.8);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
     
     body { 
-      margin: 0; height: 100vh; background: var(--bg); color: #fff; 
-      font-family: 'Consolas', monospace; overflow: hidden; 
+      margin: 0; height: 100vh; 
+      background: #020202; 
+      background-position: center !important;
+      background-size: cover !important;
+      background-repeat: no-repeat;
+      color: #fff; 
+      font-family: 'Consolas', monospace; 
+      overflow: hidden; 
       display: flex; justify-content: center; align-items: center;
-      user-select: none;
+      transition: background 0.8s ease;
     }
-    
-    .main-screen { position: relative; z-index: 10; text-align: center; transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
-    .blur { filter: blur(25px) brightness(0.3); pointer-events: none; }
 
-    /* МЯГКИЙ МАТОВЫЙ ОВЕРЛЕЙ */
+    .main-screen { text-align: center; transition: 0.5s; z-index: 10; width: 100%; }
+    .blur { filter: blur(20px) brightness(0.3); pointer-events: none; }
+
+    /* Окно маркера в середине */
     .modal-overlay { 
-      position: fixed; inset: 0; 
-      background: rgba(0, 0, 0, 0.2); 
-      backdrop-filter: blur(0px); /* Анимируется через JS */
-      display: none; justify-content: center; align-items: center; 
-      z-index: 200; opacity: 0; 
-      transition: opacity 0.5s ease, backdrop-filter 0.5s ease;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+      backdrop-filter: blur(10px); display: none; 
+      justify-content: center; align-items: center; z-index: 200; opacity: 0; 
+      transition: 0.4s;
     }
-    .modal-overlay.active { display: flex; opacity: 1; backdrop-filter: blur(12px); }
+    .modal-overlay.active { display: flex; opacity: 1; }
     
-    /* ПЛАВНОЕ ПОЯВЛЕНИЕ В ЦЕНТР */
     .shop-window { 
-      width: 460px; max-width: 92%; max-height: 80vh; 
-      background: rgba(20, 20, 20, 0.7); /* Матовая прозрачность */
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 30px; position: relative; overflow-y: auto;
-      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
-      
-      /* Начальное состояние: меньше и ниже */
-      transform: scale(0.8) translateY(40px);
-      opacity: 0;
-      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+      width: 550px; max-width: 95%; max-height: 85vh; 
+      background: var(--glass); border: 1px solid var(--border); border-radius: 24px;
+      padding: 25px; position: relative; overflow-y: auto;
+      transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .modal-overlay.active .shop-window { 
-      transform: scale(1) translateY(0); 
-      opacity: 1;
-    }
+    .modal-overlay.active .shop-window { transform: scale(1); }
 
-    h1 { font-size: 80px; font-weight: 900; margin: 0 0 20px; font-style: italic; text-transform: uppercase; }
+    .tabs { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+    .tab-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; }
+    .tab-btn.active { color: var(--red); transform: scale(1.1); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .item-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 12px; text-align: center; }
+    .wp-preview { width: 100%; height: 70px; border-radius: 8px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid var(--border); }
+
     #crushBtn { 
       padding: 30px 80px; font-size: 40px; font-weight: 900; 
       background: linear-gradient(180deg, var(--red), #500); 
-      color: #fff; border: none; border-radius: 12px; 
-      box-shadow: 0 10px 0 #300, 0 25px 50px rgba(255,0,0,0.2); 
-      cursor: pointer; transition: 0.1s;
+      color: #fff; border: none; border-radius: 15px; 
+      box-shadow: 0 10px 0 #300; cursor: pointer; transition: 0.1s;
     }
-    #crushBtn:active { transform: translateY(8px); box-shadow: 0 2px 0 #300; }
-    
-    .open-shop-btn { 
-      position: fixed; top: 20px; right: 20px; 
-      padding: 15px 30px; font-size: 16px; 
-      background: rgba(255, 255, 255, 0.05); 
-      border: 1px solid rgba(255, 255, 255, 0.1); 
-      border-radius: 12px; color: var(--gold); 
-      font-weight: 900; z-index: 50; transition: 0.3s;
-    }
+    #crushBtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #300; }
 
-    .stats { position: fixed; top: 25px; left: 25px; z-index: 100; }
-    .balance-val { font-size: 34px; font-weight: 900; letter-spacing: -1px; }
-    
-    .item-row { 
-      display: flex; justify-content: space-between; align-items: center; 
-      padding: 18px; background: rgba(255, 255, 255, 0.03); 
-      border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.05); 
-      margin-bottom: 12px; 
-    }
-    .buy-btn { padding: 10px 18px; font-size: 12px; font-weight: 900; background: #222; color: #fff; border: none; border-radius: 8px; min-width: 100px; }
-    .buy-btn.active-snd { background: var(--gold); color: #000; }
+    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 15px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); }
+    .buy-btn { width: 100%; padding: 10px; margin-top: 8px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; font-size: 11px; }
+    .btn-buy { background: var(--red); color: white; }
+    .btn-select { background: #333; color: white; }
+    .btn-active { background: var(--gold); color: black; }
 
-    #ban-screen { position: fixed; inset: 0; background: #000; color: var(--red); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+    #ban-screen { position: fixed; inset: 0; background: #000; color: var(--red); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; }
   </style>
 </head>
-<body>
+<body id="bg-body">
 
 <div id="ban-screen">
-  <h1 style="font-size: 40px;">LIMIT EXCEEDED</h1>
-  <p>DETECTED UNNATURAL CLICK SPEED. DATA RESET.</p>
+  <h1 style="font-size: 50px;">BANNED</h1>
+  <p>ОБНАРУЖЕН АВТОКЛИКЕР. АККАУНТ ОБНУЛЕН.</p>
 </div>
 
 <div class="stats">
-  <div style="color:#555; font-size:10px; font-weight: bold;">CASH_TOTAL:</div>
-  <div class="balance-val" id="bal">0</div>
-  <div id="income" style="font-size:13px; color:var(--gold); margin-top:4px;">ДОХОД: +10</div>
+  <div style="font-size:10px; opacity:0.5; letter-spacing:1px;">CASH_BALANCE</div>
+  <div id="bal" style="font-size:28px; font-weight:900;">0</div>
+  <div id="income" style="font-size:12px; color:var(--gold); margin-top:5px;">ДОХОД: +10</div>
 </div>
 
-<button class="open-shop-btn" onclick="toggleShop(true)">АРСЕНАЛ</button>
+<button class="open-shop-btn" style="position:fixed; top:20px; right:20px; z-index:100; padding:15px 25px; border-radius:12px; background:var(--glass); border:1px solid var(--border); color:white; font-weight:900; cursor:pointer;" onclick="toggleShop(true)">MARKET</button>
 
 <div class="modal-overlay" id="modal">
   <div class="shop-window">
-    <div style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:24px; color:#555;" onclick="toggleShop(false)">×</div>
-    <div style="color:var(--red); font-weight:900; margin-bottom:25px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; font-size:22px; letter-spacing: 2px;">MARKET_SONAL</div>
-    <div id="shop-content"></div>
+    <div style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:24px; color:#555;" onclick="toggleShop(false)">×</div>
+    
+    <div class="tabs">
+      <div class="tab-btn active" id="tab-sounds" onclick="switchTab('sounds')">SOUNDS (12)</div>
+      <div class="tab-btn" id="tab-wallpapers" onclick="switchTab('wallpapers')">WALLPAPERS (15)</div>
+    </div>
+
+    <div id="shop-content" class="grid"></div>
   </div>
 </div>
 
 <div class="main-screen" id="main">
-  <h1>УД<span>АР</span></h1>
+  <h1 style="font-size:70px; margin-bottom:20px; font-style:italic;">SONAL<span>STRIKE</span></h1>
   <button id="crushBtn">CRUSH</button>
 </div>
 
 <script>
-  const balEl = document.getElementById('bal'), incomeEl = document.getElementById('income'), main = document.getElementById('main'), modal = document.getElementById('modal'), shopContent = document.getElementById('shop-content'), btn = document.getElementById('crushBtn');
+  // --- ПАПКИ С КОНТЕНТОМ ---
+  const FOLDERS = {
+    sounds: [
+      { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
+      { id: "s2", n: "БАЛГАРКА", p: 500, inc: 25, f: "sound2.mp3" },
+      { id: "s3", n: "МУСУЛЬМАНИН", p: 2000, inc: 60, f: "sound3.mp3" },
+      { id: "s4", n: "ОТХУЯРЮ", p: 7000, inc: 150, f: "sound4.mp3" },
+      { id: "s5", n: "ПИСЮН", p: 20000, inc: 400, f: "sound5.mp3" },
+      { id: "s6", n: "ГАДАЛКА", p: 50000, inc: 1000, f: "sound6.mp3" },
+      { id: "s7", n: "ВАДИМ", p: 120000, inc: 2500, f: "sound7.mp3" },
+      { id: "s8", n: "ЦИГАНЕ", p: 300000, inc: 6000, f: "sound8.mp3" },
+      { id: "s9", n: "НАХУЙ", p: 800000, inc: 15000, f: "sound9.mp3" },
+      { id: "s10", n: "НЕ ХОЧЕШЬ", p: 2000000, inc: 40000, f: "sound10.mp3" },
+      { id: "s11", n: "ВЫРЯДИЛСЯ", p: 5000000, inc: 100000, f: "sound11.mp3" },
+      { id: "s12", n: "ГАНДОН", p: 15000000, inc: 300000, f: "sound12.mp3" }
+    ],
+    wallpapers: [
+      { id: "w1", n: "ORIGINAL", p: 0, f: "" },
+      { id: "w2", n: "GANGSTA", p: 1000, f: "photo_7_2026-02-01_23-17-09.jpg" },
+      { id: "w3", n: "BROTHERS", p: 2500, f: "photo_14_2026-02-01_23-17-09.jpg" },
+      { id: "w4", n: "DIRTY", p: 5000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+      { id: "w5", n: "CAMO", p: 10000, f: "photo_12_2026-02-01_23-17-09.jpg" },
+      { id: "w6", n: "SURPRISE", p: 20000, f: "photo_11_2026-02-01_23-17-09.jpg" },
+      { id: "w7", n: "TOMMY", p: 40000, f: "photo_10_2026-02-01_23-17-09.jpg" },
+      { id: "w8", n: "FISHER", p: 70000, f: "photo_9_2026-02-01_23-17-09.jpg" },
+      { id: "w9", n: "MAFIA", p: 100000, f: "photo_8_2026-02-01_23-17-09.jpg" },
+      { id: "w10", n: "TRACKSUIT", p: 200000, f: "photo_6_2026-02-01_23-17-09.jpg" },
+      { id: "w11", n: "HAT_BOSS", p: 500000, f: "photo_5_2026-02-01_23-17-09.jpg" },
+      { id: "w12", n: "MARKET_BG", p: 1000000, f: "image_24be59.png" },
+      { id: "w13", n: "LEGEND_1", p: 2000000, f: "photo_14_2026-02-01_23-17-09.jpg" }, // Можно заменить на другие фото
+      { id: "w14", n: "LEGEND_2", p: 5000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+      { id: "w15", n: "ULTIMATE", p: 10000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
+    ]
+  };
 
-  const sounds = [
-    { id: "sounds.mp3", n: "УДАР", p: 0, inc: 10 },
-    { id: "sound2.mp3", n: "ГАРАЖ БАЛГАРКА", p: 500, inc: 25 },
-    { id: "sound3.mp3", n: "МУСУЛЬМАНИН", p: 2000, inc: 60 },
-    { id: "sound4.mp3", n: "Я ЕГО ЩАС ОТХУЯРЮ", p: 7000, inc: 150 },
-    { id: "sound5.mp3", n: "С ПИСЮНОМ ПОИГРАЙ", p: 20000, inc: 400 },
-    { id: "sound6.mp3", n: "ГАДАЛКА", p: 50000, inc: 1000 },
-    { id: "sound7.mp3", n: "ВАДИМ ДОМОЙ", p: 120000, inc: 2500 },
-    { id: "sound8.mp3", n: "ААА ЦИГАНЕ", p: 300000, inc: 6000 },
-    { id: "sound9.mp3", n: "ИДИ НАХУЙ", p: 800000, inc: 15000 },
-    { id: "sound10.mp3", n: "ОЙ БЛЯТЬ НЕ ХОЧЕШЬ", p: 2000000, inc: 40000 },
-    { id: "sound11.mp3", n: "А ТЫ ЧЕ ВЫРЯДИЛСЯ", p: 5000000, inc: 100000 },
-    { id: "sound12.mp3", n: "ПЕТРОВИЧ ГАНДОН", p: 15000000, inc: 300000 }
-  ];
+  // --- ЛОГИКА ---
+  let state = JSON.parse(localStorage.getItem('sonal_mega_save')) || {
+    balance: 0,
+    currentSound: "s1",
+    currentWallpaper: "w1",
+    inv: ["s1", "w1"],
+    income: 10
+  };
 
-  let state = JSON.parse(localStorage.getItem('sonal_save')) || { balance: 0, current: "sounds.mp3", inv: ["sounds.mp3"], currentIncome: 10 };
+  let currentTab = 'sounds';
   let clickTimes = [];
-  let currentAudio = null;
+  let audioPlayer = null;
 
-  function saveGame() { localStorage.setItem('sonal_save', JSON.stringify(state)); }
+  function save() { localStorage.setItem('sonal_mega_save', JSON.stringify(state)); }
 
-  function play() {
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-    currentAudio = new Audio(state.current);
-    currentAudio.play().catch(() => {});
+  function updateVisuals() {
+    document.getElementById('bal').innerText = Math.floor(state.balance).toLocaleString();
+    document.getElementById('income').innerText = `ДОХОД: +${state.income.toLocaleString()}`;
+    
+    // Применяем обои
+    const wp = FOLDERS.wallpapers.find(w => w.id === state.currentWallpaper);
+    if (wp && wp.f) {
+      document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${wp.f})`;
+    } else {
+      document.body.style.backgroundImage = "none";
+      document.body.style.backgroundColor = "#020202";
+    }
   }
 
   function toggleShop(open) {
-    if(open) { 
-      modal.style.display = 'flex'; 
-      setTimeout(() => { modal.classList.add('active'); main.classList.add('blur'); }, 10);
-      renderShop(); 
-    } else { 
-      modal.classList.remove('active'); 
-      main.classList.remove('blur'); 
-      setTimeout(() => { modal.style.display = 'none'; }, 500);
+    const m = document.getElementById('modal');
+    if(open) {
+      m.style.display = 'flex';
+      setTimeout(() => { m.classList.add('active'); document.getElementById('main').classList.add('blur'); }, 10);
+      renderShop();
+    } else {
+      m.classList.remove('active');
+      document.getElementById('main').classList.remove('blur');
+      setTimeout(() => m.style.display = 'none', 400);
     }
+  }
+
+  function switchTab(t) {
+    currentTab = t;
+    document.getElementById('tab-sounds').classList.toggle('active', t === 'sounds');
+    document.getElementById('tab-wallpapers').classList.toggle('active', t === 'wallpapers');
+    renderShop();
   }
 
   function renderShop() {
-    shopContent.innerHTML = '';
-    sounds.forEach(s => {
-      const owned = state.inv.includes(s.id), active = state.current === s.id;
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.innerHTML = `<div><div style="font-weight:900;">${s.n}</div><div style="font-size:11px;color:var(--gold);margin-top:2px;">+${s.inc} per click</div></div>
-      <button class="buy-btn ${active?'active-snd':''}" onclick="buy('${s.id}', ${s.p}, ${s.inc})">${active?'АКТИВ':(owned?'ВЫБРАТЬ':s.p.toLocaleString())}</button>`;
-      shopContent.appendChild(row);
+    const container = document.getElementById('shop-content');
+    container.innerHTML = '';
+    
+    FOLDERS[currentTab].forEach(item => {
+      const owned = state.inv.includes(item.id);
+      const active = (currentTab === 'sounds' ? state.currentSound : state.currentWallpaper) === item.id;
+      
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      
+      let preview = '';
+      if(currentTab === 'wallpapers') {
+        const bg = item.f ? `url(${item.f})` : '#111';
+        preview = `<div class="wp-preview" style="background-image:${bg};"></div>`;
+      }
+
+      card.innerHTML = `
+        ${preview}
+        <div style="font-weight:900; font-size:13px;">${item.n}</div>
+        <div style="font-size:10px; color:var(--gold)">${currentTab==='sounds' ? '+'+item.inc.toLocaleString() : 'WALLPAPER'}</div>
+        <button class="buy-btn ${active ? 'btn-active' : (owned ? 'btn-select' : 'btn-buy')}" 
+                onclick="process('${currentTab}', '${item.id}')">
+          ${active ? 'АКТИВ' : (owned ? 'ВЫБРАТЬ' : item.p.toLocaleString())}
+        </button>
+      `;
+      container.appendChild(card);
     });
-    balEl.innerText = state.balance.toLocaleString();
-    incomeEl.innerText = `ДОХОД: +${state.currentIncome.toLocaleString()}`;
   }
 
-  window.buy = (id, p, inc) => {
-    if(state.inv.includes(id)) { state.current = id; state.currentIncome = inc; }
-    else if(state.balance >= p) { state.balance -= p; state.inv.push(id); state.current = id; state.currentIncome = inc; }
-    saveGame(); renderShop();
+  window.process = (type, id) => {
+    const item = FOLDERS[type].find(x => x.id === id);
+    const owned = state.inv.includes(id);
+
+    if (owned) {
+      if(type === 'sounds') {
+        state.currentSound = id;
+        state.income = item.inc;
+      } else {
+        state.currentWallpaper = id;
+      }
+    } else if (state.balance >= item.p) {
+      state.balance -= item.p;
+      state.inv.push(id);
+      if(type === 'sounds') {
+        state.currentSound = id;
+        state.income = item.inc;
+      } else {
+        state.currentWallpaper = id;
+      }
+    }
+    save(); updateVisuals(); renderShop();
   };
 
-  btn.onclick = (e) => {
+  document.getElementById('crushBtn').onclick = (e) => {
     e.preventDefault();
+    
+    // Анти-чит
     const now = Date.now();
     clickTimes.push(now);
     clickTimes = clickTimes.filter(t => t > now - 1000);
-
     if (clickTimes.length > 18) {
       localStorage.clear();
       document.getElementById('ban-screen').style.display = 'flex';
-      setTimeout(() => { window.location.href = "https://www.google.com"; }, 2500);
+      setTimeout(() => location.reload(), 2500);
       return;
     }
 
-    play();
-    state.balance += state.currentIncome;
-    saveGame();
-    renderShop();
+    // Звук
+    const sData = FOLDERS.sounds.find(s => s.id === state.currentSound);
+    if(audioPlayer) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
+    audioPlayer = new Audio(sData.f);
+    audioPlayer.play().catch(()=>{});
+
+    state.balance += state.income;
+    save(); updateVisuals();
   };
 
-  renderShop();
+  updateVisuals();
 </script>
 </body>
 </html>
