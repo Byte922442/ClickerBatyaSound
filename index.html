@@ -2,272 +2,235 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Sonal Clicker: Mega Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>КЛИК! - Полная Версия</title>
   <style>
     :root { 
-      --red: #ff0000; 
-      --gold: #ffcc00; 
-      --glass: rgba(15, 15, 15, 0.8);
-      --border: rgba(255, 255, 255, 0.1);
+      --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
+      --glass: rgba(10, 10, 10, 0.95); --border: rgba(255, 255, 255, 0.1); 
     }
-    
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-    
-    body { 
-      margin: 0; height: 100vh; 
-      background: #020202; 
-      background-position: center !important;
-      background-size: cover !important;
-      background-repeat: no-repeat;
-      color: #fff; 
-      font-family: 'Consolas', monospace; 
-      overflow: hidden; 
-      display: flex; justify-content: center; align-items: center;
-      transition: background 0.8s ease;
-    }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    body { background-position: center !important; background-size: cover !important; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; transition: background 0.8s ease; }
 
-    .main-screen { text-align: center; transition: 0.5s; z-index: 10; width: 100%; }
-    .blur { filter: blur(20px) brightness(0.3); pointer-events: none; }
+    /* Бан-экран */
+    #ban-screen { position: fixed; inset: 0; z-index: 10000; display: none; background: #000 url('Gemini_Generated_Image_wzoa41wzoa41wzoa.jpg') no-repeat center; background-size: contain; flex-direction: column; justify-content: flex-end; align-items: center; }
 
-    /* Окно маркера в середине */
-    .modal-overlay { 
-      position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
-      backdrop-filter: blur(10px); display: none; 
-      justify-content: center; align-items: center; z-index: 200; opacity: 0; 
-      transition: 0.4s;
-    }
+    .main-screen { text-align: center; z-index: 10; width: 100%; }
+    .blur { filter: blur(25px) brightness(0.2); pointer-events: none; }
+
+    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 18px; background: var(--glass); border: 1px solid var(--border); }
+    .shark-val { color: var(--blue); font-weight: bold; font-size: 18px; margin-top: 5px; }
+    .multiplier-tag { background: var(--blue); color: #000; padding: 2px 8px; border-radius: 6px; font-size: 12px; margin-left: 5px; font-weight: 900; }
+
+    /* Магазин */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 200; opacity: 0; transition: 0.4s; }
     .modal-overlay.active { display: flex; opacity: 1; }
-    
-    .shop-window { 
-      width: 550px; max-width: 95%; max-height: 85vh; 
-      background: var(--glass); border: 1px solid var(--border); border-radius: 24px;
-      padding: 25px; position: relative; overflow-y: auto;
-      transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    .shop-window { width: 600px; max-width: 95%; max-height: 85vh; background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 25px; overflow-y: auto; transform: scale(0.9); transition: 0.4s; }
     .modal-overlay.active .shop-window { transform: scale(1); }
 
-    .tabs { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-    .tab-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; }
-    .tab-btn.active { color: var(--red); transform: scale(1.1); }
+    .btn-ui { padding: 12px 22px; border-radius: 14px; background: var(--glass); border: 1px solid var(--border); color: white; font-weight: 900; cursor: pointer; }
+    #crushBtn { padding: 45px 110px; font-size: 60px; font-weight: 900; background: linear-gradient(180deg, var(--red), #700); color: #fff; border: none; border-radius: 30px; box-shadow: 0 14px 0 #300; cursor: pointer; transition: 0.1s; font-style: italic; }
+    #crushBtn:active { transform: translateY(10px); box-shadow: 0 4px 0 #300; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-    .item-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 12px; text-align: center; }
-    .wp-preview { width: 100%; height: 70px; border-radius: 8px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid var(--border); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 15px; }
+    .item-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid var(--border); }
+    .buy-btn { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; }
+    .wp-preview { width: 100%; height: 60px; border-radius: 10px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid var(--border); }
 
-    #crushBtn { 
-      padding: 30px 80px; font-size: 40px; font-weight: 900; 
-      background: linear-gradient(180deg, var(--red), #500); 
-      color: #fff; border: none; border-radius: 15px; 
-      box-shadow: 0 10px 0 #300; cursor: pointer; transition: 0.1s;
-    }
-    #crushBtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #300; }
-
-    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 15px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); }
-    .buy-btn { width: 100%; padding: 10px; margin-top: 8px; border-radius: 8px; border: none; font-weight: 900; cursor: pointer; font-size: 11px; }
-    .btn-buy { background: var(--red); color: white; }
-    .btn-select { background: #333; color: white; }
-    .btn-active { background: var(--gold); color: black; }
-
-    #ban-screen { position: fixed; inset: 0; background: #000; color: var(--red); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; }
+    #game-container { position: fixed; inset: 0; background: #000; z-index: 500; display: none; }
   </style>
 </head>
-<body id="bg-body">
+<body>
 
 <div id="ban-screen">
-  <h1 style="font-size: 50px;">BANNED</h1>
-  <p>ОБНАРУЖЕН АВТОКЛИКЕР. АККАУНТ ОБНУЛЕН.</p>
+    <div style="background: rgba(0,0,0,0.9); padding: 30px; width: 100%; text-align: center; color: red;">
+        <h1 style="margin:0;">ТЫ ЗАБАНЕН, БРО</h1>
+    </div>
 </div>
 
 <div class="stats">
-  <div style="font-size:10px; opacity:0.5; letter-spacing:1px;">CASH_BALANCE</div>
-  <div id="bal" style="font-size:28px; font-weight:900;">0</div>
-  <div id="income" style="font-size:12px; color:var(--gold); margin-top:5px;">ДОХОД: +10</div>
+  <div id="bal" style="font-size:28px; font-weight:900; color:var(--gold);">0</div>
+  <div style="font-size:12px; opacity:0.8;">ДОХОД <span id="mult-view" class="multiplier-tag">x1</span></div>
+  <div class="shark-val">🦈 <span id="sharks">0</span></div>
 </div>
 
-<button class="open-shop-btn" style="position:fixed; top:20px; right:20px; z-index:100; padding:15px 25px; border-radius:12px; background:var(--glass); border:1px solid var(--border); color:white; font-weight:900; cursor:pointer;" onclick="toggleShop(true)">MARKET</button>
+<button class="btn-ui" style="position:fixed; top:20px; right:20px; z-index:100;" onclick="toggleShop(true)">MARKET</button>
+<button class="btn-ui" style="position:fixed; bottom:20px; left:20px; z-index:100; border-color: var(--blue);" onclick="startMiniGame()">MINI GAMES</button>
 
-<div class="modal-overlay" id="modal">
+<div class="modal-overlay" id="modal" onclick="if(event.target == this) toggleShop(false)">
   <div class="shop-window">
-    <div style="position:absolute; top:15px; right:20px; cursor:pointer; font-size:24px; color:#555;" onclick="toggleShop(false)">×</div>
-    
-    <div class="tabs">
-      <div class="tab-btn active" id="tab-sounds" onclick="switchTab('sounds')">SOUNDS (12)</div>
-      <div class="tab-btn" id="tab-wallpapers" onclick="switchTab('wallpapers')">WALLPAPERS (15)</div>
+    <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x: auto;">
+        <button class="btn-ui" onclick="renderShop('sounds')">ЗВУКИ</button>
+        <button class="btn-ui" onclick="renderShop('wallpapers')">ОБОИ</button>
+        <button class="btn-ui" style="color:var(--blue)" onclick="renderShop('buffs')">БАФФЫ</button>
     </div>
-
     <div id="shop-content" class="grid"></div>
   </div>
 </div>
 
+<div id="game-container">
+    <div style="position:absolute; top:20px; width:100%; text-align:center; color:var(--blue); font-size:24px; font-weight:900;">СЧЕТ: <span id="game-score">0</span></div>
+    <canvas id="game-canvas"></canvas>
+</div>
+
 <div class="main-screen" id="main">
-  <h1 style="font-size:70px; margin-bottom:20px; font-style:italic;">SONAL<span>STRIKE</span></h1>
+  <h1 style="font-size:120px; margin-bottom:30px; letter-spacing:-8px; font-style: italic;">КЛИК!</h1>
   <button id="crushBtn">CRUSH</button>
 </div>
 
 <script>
-  // --- ПАПКИ С КОНТЕНТОМ ---
   const FOLDERS = {
     sounds: [
       { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
-      { id: "s2", n: "БАЛГАРКА", p: 500, inc: 25, f: "sound2.mp3" },
-      { id: "s3", n: "МУСУЛЬМАНИН", p: 2000, inc: 60, f: "sound3.mp3" },
-      { id: "s4", n: "ОТХУЯРЮ", p: 7000, inc: 150, f: "sound4.mp3" },
-      { id: "s5", n: "ПИСЮН", p: 20000, inc: 400, f: "sound5.mp3" },
-      { id: "s6", n: "ГАДАЛКА", p: 50000, inc: 1000, f: "sound6.mp3" },
-      { id: "s7", n: "ВАДИМ", p: 120000, inc: 2500, f: "sound7.mp3" },
-      { id: "s8", n: "ЦИГАНЕ", p: 300000, inc: 6000, f: "sound8.mp3" },
-      { id: "s9", n: "НАХУЙ", p: 800000, inc: 15000, f: "sound9.mp3" },
-      { id: "s10", n: "НЕ ХОЧЕШЬ", p: 2000000, inc: 40000, f: "sound10.mp3" },
-      { id: "s11", n: "ВЫРЯДИЛСЯ", p: 5000000, inc: 100000, f: "sound11.mp3" },
-      { id: "s12", n: "ГАНДОН", p: 15000000, inc: 300000, f: "sound12.mp3" }
+      { id: "s2", n: "БАЛГАРКА", p: 1000, inc: 50, f: "sound2.mp3" },
+      { id: "s3", n: "МУСЛИМ", p: 5000, inc: 150, f: "sound3.mp3" },
+      { id: "s4", n: "ОТХУЯРЮ", p: 15000, inc: 450, f: "sound4.mp3" },
+      { id: "s5", n: "ПИСЮН", p: 50000, inc: 1200, f: "sound5.mp3" },
+      { id: "s6", n: "ГАДАЛКА", p: 200000, inc: 4000, f: "sound6.mp3" },
+      { id: "s7", n: "ВАДИМ", p: 1000000, inc: 10000, f: "sound7.mp3" },
+      { id: "s8", n: "ЦИГАНЕ", p: 2500000, inc: 25000, f: "sound8.mp3" },
+      { id: "s9", n: "НАХУЙ", p: 6000000, inc: 60000, f: "sound9.mp3" },
+      { id: "s10", n: "НЕ ХОЧЕШЬ", p: 12000000, inc: 150000, f: "sound10.mp3" },
+      { id: "s11", n: "ВЫРЯДИЛСЯ", p: 30000000, inc: 400000, f: "sound11.mp3" },
+      { id: "s12", n: "ГАНДОН", p: 100000000, inc: 1000000, f: "sound12.mp3" }
     ],
     wallpapers: [
-      { id: "w1", n: "ORIGINAL", p: 0, f: "" },
-      { id: "w2", n: "GANGSTA", p: 1000, f: "photo_7_2026-02-01_23-17-09.jpg" },
-      { id: "w3", n: "BROTHERS", p: 2500, f: "photo_14_2026-02-01_23-17-09.jpg" },
-      { id: "w4", n: "DIRTY", p: 5000, f: "photo_13_2026-02-01_23-17-09.jpg" },
-      { id: "w5", n: "CAMO", p: 10000, f: "photo_12_2026-02-01_23-17-09.jpg" },
-      { id: "w6", n: "SURPRISE", p: 20000, f: "photo_11_2026-02-01_23-17-09.jpg" },
-      { id: "w7", n: "TOMMY", p: 40000, f: "photo_10_2026-02-01_23-17-09.jpg" },
-      { id: "w8", n: "FISHER", p: 70000, f: "photo_9_2026-02-01_23-17-09.jpg" },
-      { id: "w9", n: "MAFIA", p: 100000, f: "photo_8_2026-02-01_23-17-09.jpg" },
-      { id: "w10", n: "TRACKSUIT", p: 200000, f: "photo_6_2026-02-01_23-17-09.jpg" },
-      { id: "w11", n: "HAT_BOSS", p: 500000, f: "photo_5_2026-02-01_23-17-09.jpg" },
-      { id: "w12", n: "MARKET_BG", p: 1000000, f: "image_24be59.png" },
-      { id: "w13", n: "LEGEND_1", p: 2000000, f: "photo_14_2026-02-01_23-17-09.jpg" }, // Можно заменить на другие фото
-      { id: "w14", n: "LEGEND_2", p: 5000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
-      { id: "w15", n: "ULTIMATE", p: 10000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
+      { id: "w1", n: "ПУСТОТА", p: 0, f: "" },
+      { id: "w2", n: "БРИГАДА", p: 1000, f: "photo_7_2026-02-01_23-17-09.jpg" },
+      { id: "w3", n: "БРАТКИ", p: 3000, f: "photo_14_2026-02-01_23-17-09.jpg" },
+      { id: "w4", n: "ГРЯЗЬ", p: 6000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+      { id: "w5", n: "СПЕЦ", p: 12000, f: "photo_12_2026-02-01_23-17-09.jpg" },
+      { id: "w6", n: "ШОК", p: 25000, f: "photo_11_2026-02-01_23-17-09.jpg" },
+      { id: "w7", n: "ДЕВУШКА", p: 50000, f: "photo_10_2026-02-01_23-17-09.jpg" },
+      { id: "w8", n: "РЫБАК", p: 100000, f: "photo_9_2026-02-01_23-17-09.jpg" },
+      { id: "w9", n: "МАЙКА", p: 250000, f: "photo_8_2026-02-01_23-17-09.jpg" },
+      { id: "w10", n: "СПОРТ", p: 500000, f: "photo_6_2026-02-01_23-17-09.jpg" },
+      { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5_2026-02-01_23-17-09.jpg" },
+      { id: "w12", n: "СКЛАД", p: 2500000, f: "image_24be59.png" },
+      { id: "w13", n: "ЭЛИТА 1", p: 7000000, f: "photo_14_2026-02-01_23-17-09.jpg" },
+      { id: "w14", n: "ЭЛИТА 2", p: 15000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+      { id: "w15", n: "БОСС", p: 50000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
+    ],
+    buffs: [
+      { id: "b2", n: "BOOST x2", p: 500, mult: 2 },
+      { id: "b3", n: "BOOST x3", p: 1500, mult: 3 },
+      { id: "b4", n: "BOOST x4", p: 2500, mult: 4 },
+      { id: "b5", n: "BOOST x5", p: 4500, mult: 5 }
     ]
   };
 
-  // --- ЛОГИКА ---
-  let state = JSON.parse(localStorage.getItem('sonal_mega_save')) || {
-    balance: 0,
-    currentSound: "s1",
-    currentWallpaper: "w1",
-    inv: ["s1", "w1"],
-    income: 10
+  let state = JSON.parse(localStorage.getItem('sonal_final_pro')) || {
+    balance: 0, sharks: 0, currentSound: "s1", currentWallpaper: "w1", currentMult: 1, inv: ["s1", "w1"], income: 10
   };
 
-  let currentTab = 'sounds';
-  let clickTimes = [];
-  let audioPlayer = null;
+  let clickTimes = [], clickAudio = null;
 
-  function save() { localStorage.setItem('sonal_mega_save', JSON.stringify(state)); }
+  function save() { localStorage.setItem('sonal_final_pro', JSON.stringify(state)); }
 
   function updateVisuals() {
     document.getElementById('bal').innerText = Math.floor(state.balance).toLocaleString();
-    document.getElementById('income').innerText = `ДОХОД: +${state.income.toLocaleString()}`;
-    
-    // Применяем обои
+    document.getElementById('sharks').innerText = state.sharks.toLocaleString();
+    document.getElementById('mult-view').innerText = "x" + state.currentMult;
     const wp = FOLDERS.wallpapers.find(w => w.id === state.currentWallpaper);
-    if (wp && wp.f) {
-      document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${wp.f})`;
-    } else {
-      document.body.style.backgroundImage = "none";
-      document.body.style.backgroundColor = "#020202";
-    }
+    document.body.style.backgroundImage = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${wp.f})` : "none";
   }
 
   function toggleShop(open) {
     const m = document.getElementById('modal');
-    if(open) {
-      m.style.display = 'flex';
-      setTimeout(() => { m.classList.add('active'); document.getElementById('main').classList.add('blur'); }, 10);
-      renderShop();
-    } else {
-      m.classList.remove('active');
-      document.getElementById('main').classList.remove('blur');
-      setTimeout(() => m.style.display = 'none', 400);
-    }
+    if(open) { m.style.display = 'flex'; setTimeout(() => m.classList.add('active'), 10); renderShop('sounds'); }
+    else { m.classList.remove('active'); setTimeout(() => m.style.display = 'none', 400); }
   }
 
-  function switchTab(t) {
-    currentTab = t;
-    document.getElementById('tab-sounds').classList.toggle('active', t === 'sounds');
-    document.getElementById('tab-wallpapers').classList.toggle('active', t === 'wallpapers');
-    renderShop();
-  }
-
-  function renderShop() {
+  function renderShop(tab) {
     const container = document.getElementById('shop-content');
     container.innerHTML = '';
-    
-    FOLDERS[currentTab].forEach(item => {
+    FOLDERS[tab].forEach(item => {
+      const isBuff = tab === 'buffs';
       const owned = state.inv.includes(item.id);
-      const active = (currentTab === 'sounds' ? state.currentSound : state.currentWallpaper) === item.id;
+      const active = isBuff ? state.currentMult === item.mult : (tab === 'sounds' ? state.currentSound === item.id : state.currentWallpaper === item.id);
+      let preview = (tab === 'wallpapers' && item.f) ? `<div class="wp-preview" style="background-image:url(${item.f})"></div>` : '';
       
       const card = document.createElement('div');
       card.className = 'item-card';
-      
-      let preview = '';
-      if(currentTab === 'wallpapers') {
-        const bg = item.f ? `url(${item.f})` : '#111';
-        preview = `<div class="wp-preview" style="background-image:${bg};"></div>`;
-      }
-
-      card.innerHTML = `
-        ${preview}
-        <div style="font-weight:900; font-size:13px;">${item.n}</div>
-        <div style="font-size:10px; color:var(--gold)">${currentTab==='sounds' ? '+'+item.inc.toLocaleString() : 'WALLPAPER'}</div>
-        <button class="buy-btn ${active ? 'btn-active' : (owned ? 'btn-select' : 'btn-buy')}" 
-                onclick="process('${currentTab}', '${item.id}')">
-          ${active ? 'АКТИВ' : (owned ? 'ВЫБРАТЬ' : item.p.toLocaleString())}
-        </button>
-      `;
+      card.innerHTML = `${preview}<b>${item.n}</b><br><small>${isBuff ? '🦈' : '💰'}</small>
+        <button class="buy-btn" style="background:${active ? 'var(--gold)' : (owned || (isBuff && state.currentMult >= item.mult) ? '#444' : 'var(--red)')}; color:${active?'#000':'#fff'}" 
+                onclick="buy('${tab}','${item.id}')">
+          ${active ? 'АКТИВ' : ((owned || (isBuff && state.currentMult >= item.mult)) ? 'ВЫБРАТЬ' : item.p.toLocaleString())}
+        </button>`;
       container.appendChild(card);
     });
   }
 
-  window.process = (type, id) => {
-    const item = FOLDERS[type].find(x => x.id === id);
-    const owned = state.inv.includes(id);
-
-    if (owned) {
-      if(type === 'sounds') {
-        state.currentSound = id;
-        state.income = item.inc;
-      } else {
-        state.currentWallpaper = id;
-      }
-    } else if (state.balance >= item.p) {
-      state.balance -= item.p;
-      state.inv.push(id);
-      if(type === 'sounds') {
-        state.currentSound = id;
-        state.income = item.inc;
-      } else {
-        state.currentWallpaper = id;
+  window.buy = (tab, id) => {
+    const item = FOLDERS[tab].find(x => x.id === id);
+    if (tab === 'buffs') {
+      if (state.sharks >= item.p) { state.sharks -= item.p; state.currentMult = item.mult; }
+    } else {
+      if (state.inv.includes(id)) {
+        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
+        else state.currentWallpaper = id;
+      } else if (state.balance >= item.p) {
+        state.balance -= item.p; state.inv.push(id);
+        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
+        else state.currentWallpaper = id;
       }
     }
-    save(); updateVisuals(); renderShop();
+    save(); updateVisuals(); renderShop(tab);
   };
 
-  document.getElementById('crushBtn').onclick = (e) => {
-    e.preventDefault();
-    
-    // Анти-чит
-    const now = Date.now();
-    clickTimes.push(now);
+  document.getElementById('crushBtn').onclick = () => {
+    // Вход в фуллскрин
+    document.documentElement.requestFullscreen?.().catch(() => {});
+    const now = Date.now(); clickTimes.push(now);
     clickTimes = clickTimes.filter(t => t > now - 1000);
-    if (clickTimes.length > 18) {
+
+    if (clickTimes.length > 22) {
       localStorage.clear();
+      new Audio('Читы  бан кемперство  бан.mp3').play();
       document.getElementById('ban-screen').style.display = 'flex';
-      setTimeout(() => location.reload(), 2500);
-      return;
+      document.getElementById('main').style.display = 'none';
+      setTimeout(() => location.reload(), 9000); return;
     }
 
-    // Звук
     const sData = FOLDERS.sounds.find(s => s.id === state.currentSound);
-    if(audioPlayer) { audioPlayer.pause(); audioPlayer.currentTime = 0; }
-    audioPlayer = new Audio(sData.f);
-    audioPlayer.play().catch(()=>{});
+    if (!clickAudio || clickAudio.src.indexOf(sData.f) === -1) clickAudio = new Audio(sData.f);
+    clickAudio.currentTime = 0; clickAudio.play().catch(() => {});
 
-    state.balance += state.income;
-    save(); updateVisuals();
+    state.balance += (state.income * state.currentMult);
+    updateVisuals(); save();
   };
 
+  // МИНИ ИГРА
+  const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d');
+  let gameActive = false, bird, pipes, score, frame;
+
+  function startMiniGame() {
+    document.getElementById('game-container').style.display = 'block';
+    canvas.width = Math.min(450, window.innerWidth); canvas.height = window.innerHeight;
+    gameActive = true; score = 0; pipes = []; frame = 0;
+    bird = { x: 50, y: canvas.height/2, v: 0, g: 0.65 };
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gameLoop() {
+    if(!gameActive) return;
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    bird.v += bird.g; bird.y += bird.v;
+    if(frame % 90 === 0) pipes.push({ x: canvas.width, y: Math.random()*(canvas.height-350)+175, gap: 180, passed: false });
+    pipes.forEach(p => {
+      p.x -= 4; ctx.fillStyle = "#00d4ff";
+      ctx.fillRect(p.x, 0, 60, p.y - p.gap/2); ctx.fillRect(p.x, p.y + p.gap/2, 60, canvas.height);
+      if(!p.passed && p.x < bird.x) { p.passed = true; score++; state.sharks += 100; save(); updateVisuals(); document.getElementById('game-score').innerText = score; }
+      if(bird.x+25 > p.x && bird.x < p.x+60 && (bird.y < p.y-p.gap/2 || bird.y+25 > p.y+p.gap/2)) gameActive = false;
+    });
+    ctx.fillStyle = "yellow"; ctx.fillRect(bird.x, bird.y, 25, 25);
+    if(bird.y > canvas.height || bird.y < 0) gameActive = false;
+    if(!gameActive) setTimeout(() => { document.getElementById('game-container').style.display = 'none'; }, 1000);
+    else { frame++; requestAnimationFrame(gameLoop); }
+  }
+
+  document.getElementById('game-container').onclick = () => { if(gameActive) bird.v = -10; };
   updateVisuals();
 </script>
 </body>
