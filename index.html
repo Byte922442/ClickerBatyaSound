@@ -2,54 +2,77 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>кликер sonal</title>
   <style>
     :root { --red: #ff0000; --gold: #ffcc00; --bg: #010101; --win: #080808; --border: #222; }
-    * { box-sizing: border-box; cursor: crosshair; outline: none; }
-    body { margin: 0; height: 100vh; background: var(--bg); color: #fff; font-family: 'Consolas', monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
     
-    .main-screen { position: relative; z-index: 10; text-align: center; transition: filter 0.3s; }
+    body { 
+      margin: 0; height: 100vh; background: var(--bg); color: #fff; 
+      font-family: 'Consolas', monospace; overflow: hidden; 
+      display: flex; justify-content: center; align-items: center;
+      user-select: none; /* Запрет выделения текста при кликах */
+    }
+    
+    .main-screen { position: relative; z-index: 10; text-align: center; transition: filter 0.3s; width: 100%; }
     .blur { filter: blur(20px) brightness(0.2); pointer-events: none; }
     
-    h1 { font-size: 130px; font-weight: 900; margin-bottom: 10px; font-style: italic; text-transform: uppercase; letter-spacing: -5px; }
+    /* АДАПТИВНЫЙ ЗАГОЛОВОК */
+    h1 { font-size: clamp(60px, 15vw, 130px); font-weight: 900; margin-bottom: 10px; font-style: italic; text-transform: uppercase; letter-spacing: -2px; }
     h1 span { color: var(--red); text-shadow: 0 0 25px var(--red); }
     
+    /* АДАПТИВНАЯ КНОПКА */
     #crushBtn { 
-      padding: 50px 130px; font-size: 70px; font-weight: 900; 
+      padding: clamp(30px, 5vh, 50px) clamp(60px, 10vw, 130px); 
+      font-size: clamp(35px, 8vw, 70px); font-weight: 900; 
       background: linear-gradient(180deg, var(--red), #400); 
       color: #fff; border: none; border-radius: 20px; 
-      box-shadow: 0 15px 0 #200, 0 35px 70px rgba(255,0,0,0.5); 
+      box-shadow: 0 10px 0 #200, 0 35px 70px rgba(255,0,0,0.5); 
       cursor: pointer; transition: transform 0.05s;
+      width: 80%; max-width: 600px;
     }
-    #crushBtn:active { transform: translateY(12px); box-shadow: 0 3px 0 #200; }
+    #crushBtn:active { transform: translateY(8px); box-shadow: 0 2px 0 #200; }
 
-    .open-shop-btn { position: fixed; top: 20px; right: 20px; padding: 30px 50px; font-size: 28px; background: #111; border: 3px solid var(--border); color: var(--gold); font-weight: 900; cursor: pointer; z-index: 50; }
+    /* КНОПКА МАРКЕТА */
+    .open-shop-btn { 
+      position: fixed; top: 15px; right: 15px; 
+      padding: 15px 25px; font-size: clamp(16px, 4vw, 24px); 
+      background: #111; border: 2px solid var(--border); 
+      color: var(--gold); font-weight: 900; z-index: 50; 
+    }
     
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 200; }
     .modal-overlay.active { display: flex; }
     
-    /* УВЕЛИЧЕННОЕ ОКНО МАГАЗИНА */
-    .shop-window { width: 800px; max-height: 90vh; background: var(--win); border: 3px solid #333; padding: 50px; position: relative; overflow-y: auto; }
+    /* ОКНО МАГАЗИНА ДЛЯ ТЕЛЕФОНА */
+    .shop-window { 
+      width: 95%; max-width: 800px; height: 90vh; 
+      background: var(--win); border: 2px solid #333; 
+      padding: clamp(20px, 5vw, 50px); position: relative; overflow-y: auto; 
+    }
 
-    #shop-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; text-align: center; color: var(--red); font-weight: 900; font-size: 50px; pointer-events: none; opacity: 0; z-index: 300; }
+    #shop-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; color: var(--red); font-weight: 900; font-size: clamp(30px, 10vw, 50px); pointer-events: none; opacity: 0; z-index: 300; }
     #shop-msg.show { opacity: 1; animation: shake 0.2s infinite; }
     @keyframes shake { 0%, 100% {transform: translate(-50%, -50%);} 50% {transform: translate(-51%, -49%);} }
 
-    /* ГИГАНТСКИЙ ТЕКСТ В МАГАЗИНЕ */
-    .shop-header-text { color: var(--red); font-weight: 900; margin-bottom: 40px; font-size: 45px; text-transform: uppercase; letter-spacing: 3px; border-bottom: 4px solid var(--red); padding-bottom: 10px; }
+    .shop-header-text { color: var(--red); font-weight: 900; margin-bottom: 30px; font-size: clamp(24px, 6vw, 45px); text-transform: uppercase; border-bottom: 4px solid var(--red); padding-bottom: 10px; }
     
-    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 30px; background: #000; border: 2px solid #111; margin-bottom: 20px; }
-    .item-info-title { font-size: 32px; font-weight: 900; text-transform: uppercase; }
-    .item-info-sub { font-size: 18px; color: var(--gold); margin-top: 8px; font-weight: bold; }
+    .item-row { display: flex; flex-direction: column; gap: 15px; padding: 20px; background: #000; border: 1px solid #111; margin-bottom: 15px; }
+    @media(min-width: 600px) { .item-row { flex-direction: row; justify-content: space-between; align-items: center; } }
+
+    .item-info-title { font-size: clamp(20px, 5vw, 32px); font-weight: 900; text-transform: uppercase; }
+    .item-info-sub { font-size: 14px; color: var(--gold); margin-top: 5px; font-weight: bold; }
     
-    .buy-btn { padding: 20px 35px; font-size: 24px; font-weight: 900; background: #1a1a1a; color: #fff; border: none; cursor: pointer; min-width: 200px; text-transform: uppercase; }
+    .buy-btn { padding: 15px 25px; font-size: 20px; font-weight: 900; background: #1a1a1a; color: #fff; border: none; width: 100%; text-transform: uppercase; }
+    @media(min-width: 600px) { .buy-btn { width: auto; min-width: 200px; } }
     .buy-btn.owned { background: #0b240b; color: #0f0; }
     .buy-btn.active-snd { background: var(--gold); color: #000; }
 
-    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; }
-    .balance-val { font-size: 70px; font-weight: 900; color: #fff; line-height: 1; }
-    .income-info { font-size: 24px; color: var(--gold); margin-top: 15px; font-weight: bold; }
+    /* СТАТИСТИКА */
+    .stats { position: fixed; top: 15px; left: 15px; z-index: 100; pointer-events: none; }
+    .balance-val { font-size: clamp(30px, 8vw, 70px); font-weight: 900; color: #fff; line-height: 1; }
+    .income-info { font-size: clamp(14px, 4vw, 24px); color: var(--gold); margin-top: 5px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -57,7 +80,7 @@
 <div id="shop-msg">МАЛО БАБОК!</div>
 
 <div class="stats">
-  <div style="color:#555; font-size:18px; font-weight:bold;">CASH_TOTAL:</div>
+  <div style="color:#555; font-size:12px; font-weight:bold;">CASH_TOTAL:</div>
   <div class="balance-val" id="bal">0</div>
   <div class="income-info" id="income">ДОХОД: +500</div>
 </div>
@@ -66,7 +89,7 @@
 
 <div class="modal-overlay" id="modal">
   <div class="shop-window">
-    <div style="position:absolute; top:10px; right:30px; cursor:pointer; font-size:60px; color:#555;" onclick="toggleShop(false)">×</div>
+    <div style="position:absolute; top:5px; right:15px; cursor:pointer; font-size:50px; color:#555;" onclick="toggleShop(false)">×</div>
     <div class="shop-header-text">АРСЕНАЛ SONAL</div>
     <div id="shop-content"></div>
   </div>
@@ -140,7 +163,13 @@
     renderShop();
   };
 
-  btn.onclick = () => { play(); state.balance += state.currentIncome; renderShop(); };
+  btn.onclick = (e) => { 
+    e.preventDefault(); // Предотвращает зум при клике
+    play(); 
+    state.balance += state.currentIncome; 
+    renderShop(); 
+  };
+
   renderShop();
 </script>
 </body>
