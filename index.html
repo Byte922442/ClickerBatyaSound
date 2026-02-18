@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Batya Clicker Deluxe</title>
+  <title>Batya Clicker Classic</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,97 +14,69 @@
   <style>
     :root { 
       --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
-      --glass: rgba(15, 15, 15, 0.85); --border: rgba(255, 255, 255, 0.15); 
+      --glass: rgba(15, 15, 15, 0.9); --border: rgba(255, 255, 255, 0.1); 
     }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; font-family: 'Arial Black', sans-serif; font-weight: 900; user-select: none; }
     
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; text-transform: uppercase; }
-    
-    body { 
-      display: flex; justify-content: center; align-items: center; 
-      background-size: cover !important; background-position: center !important;
-      transition: background 0.5s ease;
-    }
+    body { display: flex; justify-content: center; align-items: center; background-size: cover !important; background-position: center !important; }
 
-    /* ЯРКИЙ БЫСТРЫЙ СНЕГ */
+    /* СНЕГ ПОВЕРХ ВСЕГО */
     .snow { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
     .snow::before { 
       content: ""; position: absolute; inset: -100% 0 0 0; 
       background-image: 
-        radial-gradient(5px 5px at 20px 30px, #fff, transparent), 
+        radial-gradient(4px 4px at 20px 30px, #fff, transparent), 
         radial-gradient(6px 6px at 150px 150px, #fff, transparent), 
-        radial-gradient(4px 4px at 250px 250px, #fff, transparent),
-        radial-gradient(7px 7px at 80px 400px, #fff, transparent);
-      background-size: 300px 600px; animation: snow-move 2.5s linear infinite; opacity: 0.8; 
+        radial-gradient(4px 4px at 250px 250px, #fff, transparent);
+      background-size: 300px 500px; animation: snow-move 3s linear infinite; opacity: 0.7; 
     }
     @keyframes snow-move { from { transform: translateY(0); } to { transform: translateY(100vh); } }
 
-    /* СТАТИСТИКА */
+    /* ИНТЕРФЕЙС */
     .stats { 
-      position: fixed; top: calc(15px + env(safe-area-inset-top)); left: 15px; 
-      z-index: 20; padding: 15px; background: var(--glass); 
-      backdrop-filter: blur(10px); border: 2px solid var(--border); border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 20px; 
+      z-index: 20; padding: 12px; background: var(--glass); 
+      border: 2px solid var(--border); border-radius: 15px;
     }
-    #bal { font-size: 32px; color: var(--gold); text-shadow: 0 0 10px rgba(255,204,0,0.5); }
+    #bal { font-size: 28px; color: var(--gold); }
     
-    /* КНОПКА МАРКЕТА */
     .btn-market {
-      position: fixed; top: calc(15px + env(safe-area-inset-top)); right: 15px;
-      z-index: 20; padding: 12px 20px; background: var(--glass);
-      backdrop-filter: blur(10px); border: 2px solid var(--gold); border-radius: 15px;
-      color: var(--gold); cursor: pointer;
+      position: fixed; top: calc(20px + env(safe-area-inset-top)); right: 20px;
+      z-index: 20; padding: 10px 15px; background: var(--glass);
+      border: 2px solid var(--gold); border-radius: 12px;
+      color: var(--gold); cursor: pointer; font-size: 14px;
     }
 
-    /* УПРАВЛЕНИЕ СНИЗУ */
     .controls { 
       position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); 
-      display: flex; gap: 15px; z-index: 20; 
+      display: flex; gap: 10px; z-index: 20; 
     }
     .btn-ui { 
-      padding: 12px 20px; background: var(--glass); backdrop-filter: blur(10px);
-      border: 2px solid var(--border); border-radius: 15px; color: #fff; 
-      cursor: pointer; font-size: 14px; transition: 0.2s;
+      padding: 10px 15px; background: var(--glass); 
+      border: 2px solid var(--border); border-radius: 12px; color: #fff; 
+      cursor: pointer; font-size: 12px;
     }
-    .btn-ui:active { transform: scale(0.9); }
 
-    /* ГЛАВНАЯ КНОПКА (КАК БЫЛА) */
+    /* ТА САМАЯ КНОПКА CRUSH */
     #crushBtn { 
-      padding: 60px 100px; font-size: 50px; border-radius: 40px; border: none; 
-      background: linear-gradient(180deg, var(--red), #900); color: #fff; 
-      box-shadow: 0 12px 0 #400, 0 20px 40px rgba(255,0,0,0.3); 
-      cursor: pointer; transition: 0.05s; z-index: 5; position: relative;
+      padding: 50px 85px; font-size: 45px; border-radius: 35px; border: none; 
+      background: linear-gradient(180deg, var(--red), #700); color: #fff; 
+      box-shadow: 0 10px 0 #300; 
+      cursor: pointer; transition: 0.05s; z-index: 5;
     }
-    #crushBtn:active { transform: translateY(8px); box-shadow: 0 4px 0 #400; }
+    #crushBtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #300; }
 
     /* МАГАЗИН */
-    .modal { 
-      position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
-      display: none; justify-content: center; align-items: center; z-index: 1000; 
-      backdrop-filter: blur(15px);
-    }
-    .modal.active { display: flex; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .shop { width: 95%; max-height: 85vh; background: var(--glass); border: 2px solid var(--border); border-radius: 20px; padding: 15px; overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 8px; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 8px; text-align: center; }
+    .wp-p { width: 100%; height: 50px; border-radius: 8px; margin-bottom: 5px; background-size: cover; background-position: center; }
+    .buy { width: 100%; padding: 8px 0; border: none; border-radius: 8px; background: var(--red); color: #fff; font-size: 10px; cursor: pointer; box-shadow: 0 3px 0 #500; }
+    .buy.active-i { background: var(--gold); color: #000; box-shadow: 0 3px 0 #970; }
 
-    .shop { 
-      width: 92%; max-height: 85vh; background: var(--glass); 
-      border: 2px solid var(--border); border-radius: 30px; padding: 20px; overflow-y: auto; 
-    }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-    
-    .card { 
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border); 
-      border-radius: 18px; padding: 12px; text-align: center; transition: 0.3s;
-    }
-    .wp-p { width: 100%; height: 60px; border-radius: 12px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.1); }
-    .buy { 
-      width: 100%; padding: 10px 0; border: none; border-radius: 10px; 
-      background: var(--red); color: #fff; font-size: 11px; cursor: pointer;
-      box-shadow: 0 4px 0 #600;
-    }
-    .buy.active-i { background: var(--gold); color: #000; box-shadow: 0 4px 0 #970; }
-
-    /* МИНИ-ИГРА */
     #game-cnt { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; }
   </style>
 </head>
@@ -115,21 +87,21 @@
 
 <div class="stats">
   <div id="bal">0</div>
-  <div style="font-size:12px; color: var(--blue); margin-top: 5px;">МУЛЬТИПЛЕЕР: <span id="m-v">x1</span></div>
-  <div id="b-t" style="color:var(--red); font-size: 14px; margin-top: 5px; display:none;">05:00</div>
-  <div style="color:var(--blue); font-size:18px; margin-top:10px;">🦈 <span id="sh">0</span></div>
+  <div style="font-size:11px; color: var(--blue);">МНОЖИТЕЛЬ: <span id="m-v">x1</span></div>
+  <div id="b-t" style="color:var(--red); font-size: 12px; display:none;">05:00</div>
+  <div style="color:var(--blue); font-size:16px; margin-top:4px;">🦈 <span id="sh">0</span></div>
 </div>
 
 <button class="btn-market" onclick="tS(true)">МАРКЕТ</button>
 
 <div class="controls">
-  <button class="btn-ui" id="mT" onclick="tM()">🎵 МУЗЫКА: ВЫКЛ</button>
-  <button class="btn-ui" onclick="sMG()" style="border-color: var(--blue);">МИНИ-ИГРА</button>
+  <button class="btn-ui" id="mT" onclick="tM()">🎵 ВЫКЛ</button>
+  <button class="btn-ui" onclick="sMG()" style="color: var(--blue);">ИГРА</button>
 </div>
 
 <div class="modal" id="md" onclick="if(event.target==this)tS(false)">
   <div class="shop">
-    <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom: 5px;">
+    <div style="display:flex; gap:5px; margin-bottom:12px; overflow-x:auto;">
       <button class="btn-ui" onclick="rS('sounds')">ЗВУКИ</button>
       <button class="btn-ui" onclick="rS('wallpapers')">ОБОИ</button>
       <button class="btn-ui" onclick="rS('buffs')">БАФФЫ</button>
@@ -141,12 +113,12 @@
 <button id="crushBtn">CRUSH</button>
 
 <div id="game-cnt">
-  <div style="position:absolute; top:50px; width:100%; text-align:center; color:var(--blue); font-size:30px;">АКУЛЫ: <span id="g-s">0</span></div>
+  <div style="position:absolute; top:40px; width:100%; text-align:center; color:var(--blue); font-size:24px;">СЧЕТ: <span id="g-s">0</span></div>
   <canvas id="g-c"></canvas>
 </div>
 
 <script>
-  // Те же папки и данные (звуки, обои, баффы)
+  // Те же папки данных
   const FOLDERS = {
     sounds: [
       { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
@@ -185,10 +157,10 @@
     ]
   };
 
-  let state = JSON.parse(localStorage.getItem('batya_deluxe_save')) || { bal: 0, sh: 0, cS: "s1", cW: "w1", inv: ["s1", "w1"], inc: 10, aB: 1, bE: 0, mE: false };
+  let state = JSON.parse(localStorage.getItem('batya_classic_save')) || { bal: 0, sh: 0, cS: "s1", cW: "w1", inv: ["s1", "w1"], inc: 10, aB: 1, bE: 0 };
   const bg = document.getElementById('bg'), eff = new Audio();
 
-  function save() { localStorage.setItem('batya_deluxe_save', JSON.stringify(state)); }
+  function save() { localStorage.setItem('batya_classic_save', JSON.stringify(state)); }
 
   function uV() {
     document.getElementById('bal').innerText = Math.floor(state.bal).toLocaleString();
@@ -204,7 +176,7 @@
     } else { state.aB = 1; document.getElementById('b-t').style.display = 'none'; document.getElementById('m-v').innerText = "x1"; }
   }
 
-  function tM() { state.mE = !state.mE; state.mE ? bg.play() : bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 МУЗЫКА: ВКЛ" : "🎵 МУЗЫКА: ВЫКЛ"; }
+  function tM() { state.mE = !state.mE; state.mE ? bg.play() : bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 ВКЛ" : "🎵 ВЫКЛ"; }
   function tS(o) { document.getElementById('md').classList.toggle('active', o); if(o) rS('sounds'); }
 
   function rS(t) {
@@ -212,10 +184,9 @@
     FOLDERS[t].forEach(i => {
       const owned = state.inv.includes(i.id), isC = (t==='sounds' && state.cS===i.id) || (t==='wallpapers' && state.cW===i.id);
       let p = (t==='wallpapers' && i.f) ? `<div class="wp-p" style="background-image:url(${i.f})"></div>` : '';
-      let pr = owned ? "ВЫБРАТЬ" : `ЦЕНА: ${i.p}${t==='buffs'?'🦈':''}`;
       const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `${p}<div style="font-size:11px;margin-bottom:5px;">${i.n}</div>
-        <button class="buy ${isC?'active-i':''}" onclick="buy('${t}','${i.id}')">${isC?'АКТИВ':pr}</button>`;
+      div.innerHTML = `${p}<div style="font-size:10px;margin-bottom:5px;">${i.n}</div>
+        <button class="buy ${isC?'active-i':''}" onclick="buy('${t}','${i.id}')">${isC?'АКТИВ':(owned?'ВЫБОР':'КУПИТЬ')}</button>`;
       c.appendChild(div);
     });
   }
@@ -232,7 +203,7 @@
   };
 
   document.getElementById('crushBtn').onclick = () => {
-    if(navigator.vibrate) navigator.vibrate(50);
+    if(navigator.vibrate) navigator.vibrate(40);
     eff.src = FOLDERS.sounds.find(s => s.id === state.cS).f; eff.currentTime = 0; eff.play();
     state.bal += (state.inc * state.aB); uV(); save();
   };
@@ -242,15 +213,15 @@
   function sMG() { document.getElementById('game-cnt').style.display='block'; cvs.width=window.innerWidth; cvs.height=window.innerHeight; gA=true; sc=0; ps=[]; f=0; brd={x:50,y:cvs.height/2,v:0,g:0.5}; gL(); }
   function gL() {
     if(!gA) return; ctx.clearRect(0,0,cvs.width,cvs.height); brd.v+=brd.g; brd.y+=brd.v;
-    if(f%90===0) ps.push({x:cvs.width,y:Math.random()*(cvs.height-300)+150,g:260,p:false});
-    ps.forEach(p => { p.x-=5; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,60,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,60,cvs.height);
+    if(f%90===0) ps.push({x:cvs.width,y:Math.random()*(cvs.height-300)+150,g:250,p:false});
+    ps.forEach(p => { p.x-=4; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,50,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,50,cvs.height);
       if(!p.p && p.x<brd.x){p.p=true; sc++; state.sh+=100; save(); uV(); document.getElementById('g-s').innerText=sc;}
-      if(brd.x+25>p.x && brd.x<p.x+60 && (brd.y<p.y-p.g/2 || brd.y+25>p.y+p.g/2)) gA=false;
+      if(brd.x+20>p.x && brd.x<p.x+50 && (brd.y<p.y-p.g/2 || brd.y+20>p.y+p.g/2)) gA=false;
     });
-    ctx.fillStyle="yellow"; ctx.fillRect(brd.x,brd.y,25,25); if(brd.y>cvs.height||brd.y<0) gA=false;
+    ctx.fillStyle="yellow"; ctx.fillRect(brd.x,brd.y,20,20); if(brd.y>cvs.height||brd.y<0) gA=false;
     if(!gA) setTimeout(()=>document.getElementById('game-cnt').style.display='none',1000); else {f++; requestAnimationFrame(gL);}
   }
-  document.getElementById('game-cnt').onclick=()=>{if(gA)brd.v=-9;};
+  document.getElementById('game-cnt').onclick=()=>{if(gA)brd.v=-8;};
 
   setInterval(uV, 1000); uV();
 </script>
