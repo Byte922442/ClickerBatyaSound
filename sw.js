@@ -1,11 +1,6 @@
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open('batya-v1').then((cache) => cache.addAll(['index.html', 'manifest.json']))
-  );
+  e.waitUntil(caches.open('v1').then(c => c.addAll(['index.html', 'manifest.json', 'icon.jpg'])));
 });
-
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request))
-  );
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
