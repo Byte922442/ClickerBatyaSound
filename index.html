@@ -11,55 +11,34 @@
   <meta name="theme-color" content="#000000">
 
   <style>
-    :root { 
-      --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
-      --glass: rgba(15, 15, 15, 0.9); --border: rgba(255, 255, 255, 0.1);
-    }
-    
+    :root { --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; --glass: rgba(15,15,15,0.9); --border: rgba(255,255,255,0.1); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; font-family: 'Arial Black', sans-serif; font-weight: 900; user-select: none; }
-    
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; text-transform: uppercase; }
-    body { display: flex; justify-content: center; align-items: center; background-size: cover !important; background-position: center !important; }
+    body { display: flex; justify-content: center; align-items: center; background-size: cover !important; }
 
+    /* Снег */
     .snow { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
-    .snow::before { 
-      content: ""; position: absolute; inset: -100% 0 0 0; 
-      background-image: radial-gradient(4px 4px at 50px 100px, #fff, transparent), radial-gradient(6px 6px at 200px 300px, #fff, transparent);
-      background-size: 400px 800px; animation: snow-move 3s linear infinite; opacity: 0.5; 
-    }
+    .snow::before { content: ""; position: absolute; inset: -100% 0 0 0; background-image: radial-gradient(4px 4px at 50px 100px, #fff, transparent), radial-gradient(6px 6px at 200px 300px, #fff, transparent); background-size: 400px 800px; animation: snow-move 3s linear infinite; opacity: 0.5; }
     @keyframes snow-move { from { transform: translateY(0); } to { transform: translateY(100vh); } }
 
-    .stats { 
-      position: fixed; top: 20px; left: 15px; 
-      z-index: 20; padding: 15px; background: var(--glass); backdrop-filter: blur(10px);
-      border: 1px solid var(--border); border-radius: 20px;
-    }
+    /* Интерфейс */
+    .stats { position: fixed; top: 20px; left: 15px; z-index: 20; padding: 15px; background: var(--glass); border-radius: 20px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
     #bal { font-size: 32px; color: var(--gold); }
+    .btn-market { position: fixed; top: 20px; right: 15px; z-index: 20; padding: 12px 24px; background: var(--glass); border: 2px solid var(--gold); border-radius: 15px; color: var(--gold); cursor: pointer; }
     
-    .btn-market {
-      position: fixed; top: 20px; right: 15px;
-      z-index: 20; padding: 12px 24px; background: var(--glass);
-      border: 2px solid var(--gold); border-radius: 15px; color: var(--gold); cursor: pointer;
-    }
-
     .controls { position: fixed; bottom: 20px; display: flex; gap: 10px; z-index: 20; }
-    .btn-ui { padding: 12px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: 15px; color: #fff; cursor: pointer; font-size: 12px; }
+    .btn-ui { padding: 12px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: 15px; color: #fff; cursor: pointer; font-size: 11px; }
 
-    #crushBtn { 
-      padding: 60px 100px; font-size: 50px; border-radius: 40px; border: none; 
-      background: linear-gradient(180deg, #ff0000, #800); color: #fff; 
-      box-shadow: 0 12px 0 #500; cursor: pointer; transition: 0.05s; z-index: 5;
-    }
+    #crushBtn { padding: 60px 100px; font-size: 50px; border-radius: 40px; border: none; background: linear-gradient(180deg, #ff0000, #800); color: #fff; box-shadow: 0 12px 0 #500; cursor: pointer; transition: 0.05s; }
     #crushBtn:active { transform: translateY(8px) scale(0.98); box-shadow: 0 4px 0 #500; }
 
+    /* Магазин */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal.active { display: flex; }
-    .shop { width: 92%; max-height: 85vh; background: var(--glass); border-radius: 25px; padding: 20px; overflow-y: auto; border: 1px solid var(--border); }
+    .shop { width: 92%; max-height: 80vh; background: var(--glass); border-radius: 25px; padding: 20px; overflow-y: auto; border: 1px solid var(--border); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
     .card { background: rgba(255,255,255,0.05); border-radius: 18px; padding: 12px; text-align: center; border: 1px solid var(--border); }
-    .wp-p { width: 100%; height: 50px; border-radius: 10px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.1); }
-    .buy { width: 100%; padding: 8px; border: none; border-radius: 10px; background: var(--red); color: #fff; cursor: pointer; font-size: 10px; }
-    .buy.active-i { background: var(--gold); color: #000; }
+    .buy { width: 100%; padding: 8px; border: none; border-radius: 10px; background: var(--red); color: #fff; cursor: pointer; }
 
     #game-cnt { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; }
   </style>
@@ -72,7 +51,6 @@
 <div class="stats">
   <div id="bal">0</div>
   <div style="font-size:12px; color: var(--blue);">BOOST: <span id="m-v">x1</span></div>
-  <div id="b-t" style="color:var(--red); font-size: 14px; display:none;">05:00</div>
   <div style="color:var(--blue); font-size:18px; margin-top:8px;">🦈 <span id="sh">0</span></div>
 </div>
 
@@ -80,15 +58,14 @@
 
 <div class="controls">
   <button class="btn-ui" id="mT" onclick="tM()">🎵 MUSIC: OFF</button>
-  <button class="btn-ui" onclick="sMG()" style="border-color: var(--blue); color: var(--blue);">SHARK GAME</button>
+  <button class="btn-ui" onclick="sMG()" style="border-color:var(--blue); color:var(--blue);">GAME</button>
 </div>
 
 <div id="md" class="modal" onclick="if(event.target==this)tS(false)">
   <div class="shop">
-    <div style="display:flex; gap:10px; margin-bottom:15px; overflow-x:auto; padding-bottom:5px;">
-      <button class="btn-ui" onclick="rS('sounds')">SOUNDS</button>
-      <button class="btn-ui" onclick="rS('wallpapers')">WALLS</button>
-      <button class="btn-ui" onclick="rS('buffs')">BUFFS</button>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="btn-ui" onclick="rS('sounds')">SOUNDS</button>
+        <button class="btn-ui" onclick="rS('buffs')">BUFFS</button>
     </div>
     <div id="s-c" class="grid"></div>
   </div>
@@ -102,107 +79,66 @@
 </div>
 
 <script>
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
   const FOLDERS = {
     sounds: [
       { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
       { id: "s2", n: "БАЛГАРКА", p: 1000, inc: 50, f: "sound2.mp3" },
-      { id: "s3", n: "МУСЛИМ", p: 5000, inc: 150, f: "sound3.mp3" },
-      { id: "s4", n: "ОТХУЯРЮ", p: 15000, inc: 450, f: "sound4.mp3" },
-      { id: "s5", n: "ПИСЮН", p: 50000, inc: 1200, f: "sound5.mp3" },
-      { id: "s6", n: "ГАДАЛКА", p: 200000, inc: 4000, f: "sound6.mp3" },
-      { id: "s7", n: "ВАДИМ", p: 1000000, inc: 10000, f: "sound7.mp3" },
-      { id: "s8", n: "ЦИГАНЕ", p: 2500000, inc: 25000, f: "sound8.mp3" },
-      { id: "s9", n: "НАХУЙ", p: 6000000, inc: 60000, f: "sound9.mp3" },
-      { id: "s10", n: "НЕ ХОЧЕШЬ", p: 12000000, inc: 150000, f: "sound10.mp3" },
-      { id: "s11", n: "ВЫРЯДИЛСЯ", p: 30000000, inc: 400000, f: "sound11.mp3" },
-      { id: "s12", n: "ГАНДОН", p: 100000000, inc: 1000000, f: "sound12.mp3" }
+      { id: "s3", n: "ГАНДОН", p: 1000000, inc: 10000, f: "sound12.mp3" }
     ],
-    wallpapers: [
-      { id: "w1", n: "ПУСТОТА", p: 0, f: "" },
-      { id: "w2", n: "БРИГАДА", p: 1000, f: "photo_7.jpg" },
-      { id: "w3", n: "БРАТКИ", p: 3000, f: "photo_14.jpg" },
-      { id: "w4", n: "ГРЯЗЬ", p: 6000, f: "photo_13.jpg" },
-      { id: "w5", n: "СПЕЦ", p: 12000, f: "photo_12.jpg" },
-      { id: "w6", n: "ШОК", p: 25000, f: "photo_11.jpg" },
-      { id: "w7", n: "ДЕВУШКА", p: 50000, f: "photo_10.jpg" },
-      { id: "w8", n: "РЫБАК", p: 100000, f: "photo_9.jpg" },
-      { id: "w9", n: "МАЙКА", p: 250000, f: "photo_8.jpg" },
-      { id: "w10", n: "СПОРТ", p: 500000, f: "photo_6.jpg" },
-      { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5.jpg" },
-      { id: "w12", n: "СКЛАД", p: 2500000, f: "image_24be59.png" }
-    ],
-    buffs: [
-      { id: "b2", n: "x2 БУСТ", p: 500, m: 2 },
-      { id: "b3", n: "x3 БУСТ", p: 1500, m: 3 },
-      { id: "b5", n: "x5 БУСТ", p: 5000, m: 5 },
-      { id: "b10", n: "x10 БУСТ", p: 20000, m: 10 },
-      { id: "b50", n: "x50 БУСТ", p: 100000, m: 50 }
-    ]
+    buffs: [{ id: "b2", n: "x2 БУСТ", p: 500, m: 2 }]
   };
 
-  let state = JSON.parse(localStorage.getItem('cbs_save')) || { bal: 0, sh: 0, cS: "s1", cW: "w1", inv: ["s1", "w1"], inc: 10, aB: 1, bE: 0, mE: false };
+  let state = JSON.parse(localStorage.getItem('cbs_save')) || { bal: 0, sh: 0, cS: "s1", inv: ["s1"], inc: 10, aB: 1, mE: false };
   const bg = document.getElementById('bg'), eff = new Audio();
 
   function save() { localStorage.setItem('cbs_save', JSON.stringify(state)); }
-
   function uV() {
     document.getElementById('bal').innerText = Math.floor(state.bal).toLocaleString();
     document.getElementById('sh').innerText = state.sh.toLocaleString();
-    const wp = FOLDERS.wallpapers.find(w => w.id === state.cW);
-    document.body.style.background = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url(${wp.f})` : "#000";
-    
-    let now = Date.now();
-    if (state.bE > now) {
-      let l = Math.ceil((state.bE - now) / 1000), m = Math.floor(l / 60), s = l % 60;
-      document.getElementById('b-t').style.display = 'block';
-      document.getElementById('b-t').innerText = `BUFF: ${m}:${s<10?'0':''}${s}`;
-      document.getElementById('m-v').innerText = "x" + state.aB;
-    } else { state.aB = 1; document.getElementById('b-t').style.display = 'none'; document.getElementById('m-v').innerText = "x1"; }
+    document.getElementById('m-v').innerText = "x" + state.aB;
   }
 
-  function tM() { state.mE = !state.mE; if(state.mE) bg.play().catch(()=>{}); else bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 MUSIC: ON" : "🎵 MUSIC: OFF"; }
+  function tM() { state.mE = !state.mE; if(state.mE) bg.play(); else bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 MUSIC: ON" : "🎵 MUSIC: OFF"; }
   function tS(o) { document.getElementById('md').classList.toggle('active', o); if(o) rS('sounds'); }
 
   function rS(t) {
     const c = document.getElementById('s-c'); c.innerHTML = '';
     FOLDERS[t].forEach(i => {
-      const owned = state.inv.includes(i.id), isC = (t==='sounds' && state.cS===i.id) || (t==='wallpapers' && state.cW===i.id);
-      let preview = (t==='wallpapers' && i.f) ? `<div class="wp-p" style="background-image:url(${i.f})"></div>` : '';
-      let gain = t==='sounds' ? `+${i.inc.toLocaleString()} / CLK` : (t==='buffs' ? `BOOST x${i.m}` : 'VISUAL');
-      let costText = owned ? "OWNED" : `${i.p.toLocaleString()}${t==='buffs'?' 🦈':''}`;
+      const owned = state.inv.includes(i.id);
       const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `${preview}<div style="font-size:10px; margin-bottom:5px;">${i.n}</div><div style="font-size:9px; color:var(--blue);">${gain}</div><div style="font-size:11px; color:var(--gold); margin:8px 0;">${costText}</div>
-        <button class="buy ${isC?'active-i':''}" onclick="buy('${t}','${i.id}')">${isC?'ACTIVE':'SELECT'}</button>`;
+      div.innerHTML = `<div style="font-size:10px;">${i.n}</div><div style="color:var(--gold); margin:8px 0;">${owned?'OWNED':i.p}</div>
+        <button class="buy" onclick="buy('${t}','${i.id}')">SELECT</button>`;
       c.appendChild(div);
     });
   }
 
   window.buy = (t, id) => {
     const i = FOLDERS[t].find(x => x.id === id);
-    if (t === 'buffs') {
-      if (state.sh >= i.p && state.aB === 1) { state.sh -= i.p; state.aB = i.m; state.bE = Date.now() + 300000; tS(false); }
-    } else {
-      if (state.inv.includes(id)) { if(t==='sounds'){state.cS=id; state.inc=i.inc;} else state.cW=id; }
-      else if (state.bal >= i.p) { state.bal -= i.p; state.inv.push(id); if(t==='sounds'){state.cS=id; state.inc=i.inc;} else state.cW=id; }
+    if (state.inv.includes(id) || state.bal >= i.p) {
+        if (!state.inv.includes(id)) { state.bal -= i.p; state.inv.push(id); }
+        if (t === 'sounds') { state.cS = id; state.inc = i.inc; }
+        if (t === 'buffs') { state.aB = i.m; }
     }
-    save(); uV(); if(document.getElementById('md').classList.contains('active')) rS(t);
+    save(); uV();
   };
 
-  document.getElementById('crushBtn').onclick = (e) => {
-    if(navigator.vibrate) navigator.vibrate(50);
+  document.getElementById('crushBtn').onclick = () => {
     let sData = FOLDERS.sounds.find(s => s.id === state.cS);
-    eff.src = sData.f; eff.currentTime = 0; eff.play().catch(()=>{});
+    eff.src = sData.f; eff.play().catch(()=>{});
     state.bal += state.inc * state.aB;
     uV(); save();
   };
 
+  // Мини-игра с кругом
   const cvs = document.getElementById('g-c'), ctx = cvs.getContext('2d');
   let gA = false, brd, ps, sc, f;
   function sMG() { document.getElementById('game-cnt').style.display='block'; cvs.width=window.innerWidth; cvs.height=window.innerHeight; gA=true; sc=0; ps=[]; f=0; brd={x:50,y:cvs.height/2,v:0,g:0.6,r:15}; gL(); }
   function gL() {
     if(!gA) return; ctx.clearRect(0,0,cvs.width,cvs.height); brd.v+=brd.g; brd.y+=brd.v;
-    if(f%85===0) ps.push({x:cvs.width,y:Math.random()*(cvs.height-300)+150,g:260,p:false});
-    ps.forEach(p => { p.x-=5; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,60,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,60,cvs.height);
+    if(f%90===0) ps.push({x:cvs.width,y:Math.random()*(cvs.height-300)+150,g:250,p:false});
+    ps.forEach(p => { p.x-=4; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,60,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,60,cvs.height);
       if(!p.p && p.x<brd.x){p.p=true; sc++; state.sh+=100; save(); uV(); document.getElementById('g-s').innerText=sc;}
       if(brd.x+brd.r>p.x && brd.x-brd.r<p.x+60 && (brd.y-brd.r<p.y-p.g/2 || brd.y+brd.r>p.y+p.g/2)) gA=false;
     });
@@ -211,8 +147,7 @@
     if(!gA) setTimeout(()=>document.getElementById('game-cnt').style.display='none',1000); else { f++; requestAnimationFrame(gL); }
   }
   document.getElementById('game-cnt').onclick=()=>{if(gA)brd.v=-9;};
-
-  uV(); setInterval(uV, 1000);
+  uV();
 </script>
 </body>
 </html>
