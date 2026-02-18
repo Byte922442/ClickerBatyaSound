@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Batya Clicker Classic</title>
+  <title>Batya Clicker Full</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,69 +14,71 @@
   <style>
     :root { 
       --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
-      --glass: rgba(15, 15, 15, 0.9); --border: rgba(255, 255, 255, 0.1); 
+      --glass: rgba(15, 15, 15, 0.92); --border: rgba(255, 255, 255, 0.1); 
     }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; font-family: 'Arial Black', sans-serif; font-weight: 900; user-select: none; }
     
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; text-transform: uppercase; }
-    body { display: flex; justify-content: center; align-items: center; background-size: cover !important; background-position: center !important; }
+    body { display: flex; justify-content: center; align-items: center; background-size: cover !important; background-position: center !important; transition: 0.3s; }
 
-    /* СНЕГ ПОВЕРХ ВСЕГО */
-    .snow { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+    /* ЯРКИЙ И БЫСТРЫЙ СНЕГ */
+    .snow { position: fixed; inset: 0; pointer-events: none; z-index: 15; }
     .snow::before { 
       content: ""; position: absolute; inset: -100% 0 0 0; 
       background-image: 
         radial-gradient(4px 4px at 20px 30px, #fff, transparent), 
         radial-gradient(6px 6px at 150px 150px, #fff, transparent), 
-        radial-gradient(4px 4px at 250px 250px, #fff, transparent);
-      background-size: 300px 500px; animation: snow-move 3s linear infinite; opacity: 0.7; 
+        radial-gradient(5px 5px at 250px 250px, #fff, transparent);
+      background-size: 300px 500px; animation: snow-move 2.5s linear infinite; opacity: 0.8; 
     }
     @keyframes snow-move { from { transform: translateY(0); } to { transform: translateY(100vh); } }
 
-    /* ИНТЕРФЕЙС */
+    /* ВЕРХНЯЯ ПАНЕЛЬ */
     .stats { 
-      position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 20px; 
+      position: fixed; top: calc(15px + env(safe-area-inset-top)); left: 15px; 
       z-index: 20; padding: 12px; background: var(--glass); 
-      border: 2px solid var(--border); border-radius: 15px;
+      border: 2px solid var(--border); border-radius: 15px; backdrop-filter: blur(10px);
     }
     #bal { font-size: 28px; color: var(--gold); }
     
     .btn-market {
-      position: fixed; top: calc(20px + env(safe-area-inset-top)); right: 20px;
-      z-index: 20; padding: 10px 15px; background: var(--glass);
-      border: 2px solid var(--gold); border-radius: 12px;
+      position: fixed; top: calc(15px + env(safe-area-inset-top)); right: 15px;
+      z-index: 20; padding: 12px 18px; background: var(--glass);
+      border: 2px solid var(--gold); border-radius: 15px;
       color: var(--gold); cursor: pointer; font-size: 14px;
     }
 
+    /* НИЖНЯЯ ПАНЕЛЬ */
     .controls { 
       position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); 
       display: flex; gap: 10px; z-index: 20; 
     }
     .btn-ui { 
-      padding: 10px 15px; background: var(--glass); 
-      border: 2px solid var(--border); border-radius: 12px; color: #fff; 
-      cursor: pointer; font-size: 12px;
+      padding: 12px 18px; background: var(--glass); 
+      border: 2px solid var(--border); border-radius: 15px; color: #fff; 
+      cursor: pointer; font-size: 12px; backdrop-filter: blur(5px);
     }
 
     /* ТА САМАЯ КНОПКА CRUSH */
     #crushBtn { 
-      padding: 50px 85px; font-size: 45px; border-radius: 35px; border: none; 
-      background: linear-gradient(180deg, var(--red), #700); color: #fff; 
-      box-shadow: 0 10px 0 #300; 
+      padding: 55px 95px; font-size: 48px; border-radius: 35px; border: none; 
+      background: linear-gradient(180deg, var(--red), #800); color: #fff; 
+      box-shadow: 0 12px 0 #400, 0 20px 40px rgba(0,0,0,0.5); 
       cursor: pointer; transition: 0.05s; z-index: 5;
     }
-    #crushBtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #300; }
+    #crushBtn:active { transform: translateY(8px); box-shadow: 0 4px 0 #400; }
 
-    /* МАГАЗИН */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    /* ОКНО МАГАЗИНА */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
     .modal.active { display: flex; }
-    .shop { width: 95%; max-height: 85vh; background: var(--glass); border: 2px solid var(--border); border-radius: 20px; padding: 15px; overflow-y: auto; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 8px; }
-    .card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 8px; text-align: center; }
-    .wp-p { width: 100%; height: 50px; border-radius: 8px; margin-bottom: 5px; background-size: cover; background-position: center; }
-    .buy { width: 100%; padding: 8px 0; border: none; border-radius: 8px; background: var(--red); color: #fff; font-size: 10px; cursor: pointer; box-shadow: 0 3px 0 #500; }
-    .buy.active-i { background: var(--gold); color: #000; box-shadow: 0 3px 0 #970; }
+    .shop { width: 92%; max-height: 85vh; background: var(--glass); border: 2px solid var(--border); border-radius: 25px; padding: 20px; overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; padding: 10px; text-align: center; }
+    .wp-p { width: 100%; height: 55px; border-radius: 10px; margin-bottom: 6px; background-size: cover; background-position: center; }
+    .buy { width: 100%; padding: 10px 0; border: none; border-radius: 10px; background: var(--red); color: #fff; font-size: 11px; cursor: pointer; box-shadow: 0 4px 0 #600; }
+    .buy.active-i { background: var(--gold); color: #000; box-shadow: 0 4px 0 #970; }
 
+    /* МИНИ-ИГРА */
     #game-cnt { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; }
   </style>
 </head>
@@ -88,20 +90,20 @@
 <div class="stats">
   <div id="bal">0</div>
   <div style="font-size:11px; color: var(--blue);">МНОЖИТЕЛЬ: <span id="m-v">x1</span></div>
-  <div id="b-t" style="color:var(--red); font-size: 12px; display:none;">05:00</div>
-  <div style="color:var(--blue); font-size:16px; margin-top:4px;">🦈 <span id="sh">0</span></div>
+  <div id="b-t" style="color:var(--red); font-size: 13px; margin-top:5px; display:none;">05:00</div>
+  <div style="color:var(--blue); font-size:16px; margin-top:5px;">🦈 <span id="sh">0</span></div>
 </div>
 
 <button class="btn-market" onclick="tS(true)">МАРКЕТ</button>
 
 <div class="controls">
-  <button class="btn-ui" id="mT" onclick="tM()">🎵 ВЫКЛ</button>
-  <button class="btn-ui" onclick="sMG()" style="color: var(--blue);">ИГРА</button>
+  <button class="btn-ui" id="mT" onclick="tM()">🎵 МУЗЫКА: ВЫКЛ</button>
+  <button class="btn-ui" onclick="sMG()" style="border-color: var(--blue);">ИГРА</button>
 </div>
 
 <div class="modal" id="md" onclick="if(event.target==this)tS(false)">
   <div class="shop">
-    <div style="display:flex; gap:5px; margin-bottom:12px; overflow-x:auto;">
+    <div style="display:flex; gap:8px; margin-bottom:15px; overflow-x:auto;">
       <button class="btn-ui" onclick="rS('sounds')">ЗВУКИ</button>
       <button class="btn-ui" onclick="rS('wallpapers')">ОБОИ</button>
       <button class="btn-ui" onclick="rS('buffs')">БАФФЫ</button>
@@ -113,12 +115,11 @@
 <button id="crushBtn">CRUSH</button>
 
 <div id="game-cnt">
-  <div style="position:absolute; top:40px; width:100%; text-align:center; color:var(--blue); font-size:24px;">СЧЕТ: <span id="g-s">0</span></div>
+  <div style="position:absolute; top:50px; width:100%; text-align:center; color:var(--blue); font-size:28px;">АКУЛЫ: <span id="g-s">0</span></div>
   <canvas id="g-c"></canvas>
 </div>
 
 <script>
-  // Те же папки данных
   const FOLDERS = {
     sounds: [
       { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
@@ -157,36 +158,40 @@
     ]
   };
 
-  let state = JSON.parse(localStorage.getItem('batya_classic_save')) || { bal: 0, sh: 0, cS: "s1", cW: "w1", inv: ["s1", "w1"], inc: 10, aB: 1, bE: 0 };
+  let state = JSON.parse(localStorage.getItem('batya_final_save')) || { bal: 0, sh: 0, cS: "s1", cW: "w1", inv: ["s1", "w1"], inc: 10, aB: 1, bE: 0, mE: false };
   const bg = document.getElementById('bg'), eff = new Audio();
 
-  function save() { localStorage.setItem('batya_classic_save', JSON.stringify(state)); }
+  function save() { localStorage.setItem('batya_final_save', JSON.stringify(state)); }
 
   function uV() {
     document.getElementById('bal').innerText = Math.floor(state.bal).toLocaleString();
     document.getElementById('sh').innerText = state.sh.toLocaleString();
     const wp = FOLDERS.wallpapers.find(w => w.id === state.cW);
-    document.body.style.background = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url(${wp.f})` : "#000";
+    document.body.style.background = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)), url(${wp.f})` : "#000";
+    
     let now = Date.now();
     if (state.bE > now) {
       let l = Math.ceil((state.bE - now) / 1000), m = Math.floor(l / 60), s = l % 60;
       document.getElementById('b-t').style.display = 'block';
       document.getElementById('b-t').innerText = `БАФФ: ${m}:${s<10?'0':''}${s}`;
       document.getElementById('m-v').innerText = "x" + state.aB;
-    } else { state.aB = 1; document.getElementById('b-t').style.display = 'none'; document.getElementById('m-v').innerText = "x1"; }
+    } else { 
+      state.aB = 1; document.getElementById('b-t').style.display = 'none'; document.getElementById('m-v').innerText = "x1"; 
+    }
   }
 
-  function tM() { state.mE = !state.mE; state.mE ? bg.play() : bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 ВКЛ" : "🎵 ВЫКЛ"; }
+  function tM() { state.mE = !state.mE; state.mE ? bg.play() : bg.pause(); document.getElementById('mT').innerText = state.mE ? "🎵 МУЗЫКА: ВКЛ" : "🎵 МУЗЫКА: ВЫКЛ"; }
   function tS(o) { document.getElementById('md').classList.toggle('active', o); if(o) rS('sounds'); }
 
   function rS(t) {
     const c = document.getElementById('s-c'); c.innerHTML = '';
     FOLDERS[t].forEach(i => {
       const owned = state.inv.includes(i.id), isC = (t==='sounds' && state.cS===i.id) || (t==='wallpapers' && state.cW===i.id);
-      let p = (t==='wallpapers' && i.f) ? `<div class="wp-p" style="background-image:url(${i.f})"></div>` : '';
+      let preview = (t==='wallpapers' && i.f) ? `<div class="wp-p" style="background-image:url(${i.f})"></div>` : '';
+      let priceText = owned ? "ВЫБРАТЬ" : `ЦЕНА: ${i.p}${t==='buffs'?'🦈':''}`;
       const div = document.createElement('div'); div.className = 'card';
-      div.innerHTML = `${p}<div style="font-size:10px;margin-bottom:5px;">${i.n}</div>
-        <button class="buy ${isC?'active-i':''}" onclick="buy('${t}','${i.id}')">${isC?'АКТИВ':(owned?'ВЫБОР':'КУПИТЬ')}</button>`;
+      div.innerHTML = `${preview}<div style="font-size:10px;margin-bottom:5px;">${i.n}</div>
+        <button class="buy ${isC?'active-i':''}" onclick="buy('${t}','${i.id}')">${isC?'АКТИВ':priceText}</button>`;
       c.appendChild(div);
     });
   }
@@ -194,7 +199,9 @@
   window.buy = (t, id) => {
     const i = FOLDERS[t].find(x => x.id === id);
     if (t === 'buffs') {
-      if (state.sh >= i.p && state.aB === 1) { state.sh -= i.p; state.aB = i.m; state.bE = Date.now() + 300000; tS(false); }
+      if (state.sh >= i.p && state.aB === 1) { 
+        state.sh -= i.p; state.aB = i.m; state.bE = Date.now() + 300000; tS(false); 
+      } else if (state.aB > 1) { alert("ЖДИ КОНЦА БАФФА!"); }
     } else {
       if (state.inv.includes(id)) { if(t==='sounds'){state.cS=id; state.inc=i.inc;} else state.cW=id; }
       else if (state.bal >= i.p) { state.bal -= i.p; state.inv.push(id); if(t==='sounds'){state.cS=id; state.inc=i.inc;} else state.cW=id; }
@@ -203,7 +210,7 @@
   };
 
   document.getElementById('crushBtn').onclick = () => {
-    if(navigator.vibrate) navigator.vibrate(40);
+    if(navigator.vibrate) navigator.vibrate(45);
     eff.src = FOLDERS.sounds.find(s => s.id === state.cS).f; eff.currentTime = 0; eff.play();
     state.bal += (state.inc * state.aB); uV(); save();
   };
@@ -214,16 +221,17 @@
   function gL() {
     if(!gA) return; ctx.clearRect(0,0,cvs.width,cvs.height); brd.v+=brd.g; brd.y+=brd.v;
     if(f%90===0) ps.push({x:cvs.width,y:Math.random()*(cvs.height-300)+150,g:250,p:false});
-    ps.forEach(p => { p.x-=4; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,50,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,50,cvs.height);
+    ps.forEach(p => { p.x-=4.5; ctx.fillStyle="#00d4ff"; ctx.fillRect(p.x,0,55,p.y-p.g/2); ctx.fillRect(p.x,p.y+p.g/2,55,cvs.height);
       if(!p.p && p.x<brd.x){p.p=true; sc++; state.sh+=100; save(); uV(); document.getElementById('g-s').innerText=sc;}
-      if(brd.x+20>p.x && brd.x<p.x+50 && (brd.y<p.y-p.g/2 || brd.y+20>p.y+p.g/2)) gA=false;
+      if(brd.x+22>p.x && brd.x<p.x+55 && (brd.y<p.y-p.g/2 || brd.y+22>p.y+p.g/2)) gA=false;
     });
-    ctx.fillStyle="yellow"; ctx.fillRect(brd.x,brd.y,20,20); if(brd.y>cvs.height||brd.y<0) gA=false;
+    ctx.fillStyle="yellow"; ctx.fillRect(brd.x,brd.y,22,22); if(brd.y>cvs.height||brd.y<0) gA=false;
     if(!gA) setTimeout(()=>document.getElementById('game-cnt').style.display='none',1000); else {f++; requestAnimationFrame(gL);}
   }
-  document.getElementById('game-cnt').onclick=()=>{if(gA)brd.v=-8;};
+  document.getElementById('game-cnt').onclick=()=>{if(gA)brd.v=-8.5;};
 
   setInterval(uV, 1000); uV();
 </script>
 </body>
 </html>
+
