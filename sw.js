@@ -1,5 +1,11 @@
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker зарегистрирован"))
-    .catch(err => console.log("Ошибка SW:", err));
-}
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open('batya-v1').then((cache) => cache.addAll(['index.html', 'manifest.json']))
+  );
+});
+
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then((response) => response || fetch(e.request))
+  );
+});
