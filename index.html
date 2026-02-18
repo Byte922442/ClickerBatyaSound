@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>КЛИК! - ULTRA VERSION</title>
+  <title>ClickerBatyaSounds</title>
   <style>
     :root { 
       --red: #ff0000; --gold: #ffcc00; --blue: #00d4ff; 
@@ -11,154 +11,198 @@
     }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-    body { background-position: center !important; background-size: cover !important; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; transition: background 0.8s ease; }
+    body { background-position: center !important; background-size: cover !important; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; }
 
-    /* Экран бана */
-    #ban-screen { 
-      position: fixed; inset: 0; z-index: 10000; display: none; 
-      background: #000 url('Gemini_Generated_Image_wzoa41wzoa41wzoa.jpg') no-repeat center; 
-      background-size: cover; 
+    /* ПАДАЮЩИЙ СНЕГ */
+    .snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    .snow-container::before {
+      content: ""; position: absolute; top: -100%; left: 0; right: 0; bottom: 0;
+      background-image: radial-gradient(3px 3px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(4px 4px at 150px 150px, #fff, rgba(0,0,0,0)), radial-gradient(3px 3px at 250px 250px, #fff, rgba(0,0,0,0));
+      background-size: 300px 300px; animation: snow-anim 15s linear infinite; opacity: 0.4;
     }
+    @keyframes snow-anim { from { transform: translateY(0); } to { transform: translateY(100vh); } }
 
-    .main-screen { text-align: center; z-index: 10; width: 100%; }
-    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 18px; background: var(--glass); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .shark-val { color: var(--blue); font-weight: bold; font-size: 18px; margin-top: 5px; }
-    .multiplier-tag { background: var(--blue); color: #000; padding: 2px 8px; border-radius: 6px; font-size: 12px; margin-left: 5px; font-weight: 900; }
+    /* СТАТИСТИКА */
+    .stats { position: fixed; top: 20px; left: 20px; z-index: 100; padding: 15px; border-radius: 18px; background: var(--glass); border: 1px solid var(--border); }
+    #buff-timer { color: var(--red); font-weight: 900; font-size: 18px; display: none; margin-top: 5px; text-shadow: 0 0 10px var(--red); }
+    .shark-val { color: var(--blue); font-weight: bold; font-size: 22px; margin-top: 5px; }
 
-    /* Маркет */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 200; opacity: 0; transition: 0.4s; }
-    .modal-overlay.active { display: flex; opacity: 1; }
-    .shop-window { width: 600px; max-width: 95%; max-height: 85vh; background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 25px; overflow-y: auto; transform: scale(0.9); transition: 0.4s; }
-    .modal-overlay.active .shop-window { transform: scale(1); }
+    /* КНОПКИ */
+    .controls-bottom { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+    .btn-ui { padding: 15px 25px; border-radius: 16px; background: var(--glass); border: 1px solid var(--border); color: white; font-weight: 900; cursor: pointer; }
+    
+    #crushBtn { padding: 60px 110px; font-size: 60px; font-weight: 900; background: linear-gradient(180deg, var(--red), #700); color: #fff; border: none; border-radius: 40px; box-shadow: 0 15px 0 #300; cursor: pointer; transition: 0.05s; z-index: 5; position: relative; }
+    #crushBtn:active { transform: translateY(8px); box-shadow: 0 7px 0 #300; }
 
-    .btn-ui { padding: 12px 22px; border-radius: 14px; background: var(--glass); border: 1px solid var(--border); color: white; font-weight: 900; cursor: pointer; transition: 0.2s; }
-    #crushBtn { padding: 45px 110px; font-size: 60px; font-weight: 900; background: linear-gradient(180deg, var(--red), #700); color: #fff; border: none; border-radius: 30px; box-shadow: 0 14px 0 #300; cursor: pointer; transition: 0.1s; font-style: italic; }
-    #crushBtn:active { transform: translateY(10px); box-shadow: 0 4px 0 #300; }
+    /* МАРКЕТ */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+    .modal-overlay.active { display: flex; }
+    .shop-window { width: 750px; max-width: 95%; max-height: 85vh; background: var(--glass); border: 1px solid var(--border); border-radius: 35px; padding: 25px; overflow-y: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+    .item-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 12px; text-align: center; border: 1px solid var(--border); overflow: hidden; }
+    
+    /* СТИЛЬ ДЛЯ ПРЕВЬЮ ФОТО */
+    .wp-preview { 
+      width: 100%; height: 100px; border-radius: 12px; margin-bottom: 8px; 
+      background-size: cover; background-position: center; 
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .no-photo { display: flex; align-items: center; justify-content: center; font-size: 12px; background: #222; color: #555; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 15px; }
-    .item-card { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid var(--border); }
-    .buy-btn { width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; }
-    .wp-preview { width: 100%; height: 70px; border-radius: 10px; margin-bottom: 8px; background-size: cover; background-position: center; border: 1px solid var(--border); }
+    .buy-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: 900; background: var(--red); color: #fff; margin-top: 8px; }
+    .buy-btn.active-item { background: var(--gold); color: #000; }
 
-    /* Мини-игра */
-    #game-container { position: fixed; inset: 0; background: #000; z-index: 500; display: none; }
-    #game-canvas { display: block; margin: 0 auto; background: radial-gradient(circle, #111, #000); }
+    /* ЭКРАН ТРУБ */
+    #game-container { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; touch-action: none; }
+    #game-canvas { display: block; margin: 0 auto; background: #050505; }
+    .game-ui { position: absolute; top: 40px; width: 100%; text-align: center; color: var(--blue); font-size: 24px; font-weight: 900; pointer-events: none; }
   </style>
 </head>
 <body>
 
-<div id="ban-screen"></div>
+<div class="snow-container"></div>
+<audio id="bgMusic" loop><source src="fonovaya_muzyka.mp3" type="audio/mpeg"></audio>
+
+<div id="game-container">
+    <div class="game-ui">АКУЛЫ ЗА ТРУБУ: +100 | СЧЕТ: <span id="game-score">0</span></div>
+    <canvas id="game-canvas"></canvas>
+</div>
 
 <div class="stats">
-  <div id="bal" style="font-size:28px; font-weight:900; color:var(--gold);">0</div>
-  <div style="font-size:12px; opacity:0.8;">ДОХОД <span id="mult-view" class="multiplier-tag">x1</span></div>
+  <div id="bal" style="font-size:35px; font-weight:900; color:var(--gold);">0</div>
+  <div style="font-size:14px; opacity:0.9; font-weight: bold;">ДОХОД: <span id="mult-view" style="color:var(--blue)">x1</span></div>
+  <div id="buff-timer">05:00</div>
   <div class="shark-val">🦈 <span id="sharks">0</span></div>
 </div>
 
-<button class="btn-ui" style="position:fixed; top:20px; right:20px; z-index:100;" onclick="toggleShop(true)">MARKET</button>
-<button class="btn-ui" style="position:fixed; bottom:20px; left:20px; z-index:100; border-color: var(--blue);" onclick="startMiniGame()">MINI GAMES</button>
+<button class="btn-ui" style="position:fixed; top:20px; right:20px; z-index:100; border-color: var(--gold);" onclick="toggleShop(true)">МАРКЕТ</button>
+
+<div class="controls-bottom">
+  <button class="btn-ui" id="musicToggle" onclick="toggleMusic()">МУЗЫКА: ВЫКЛ</button>
+  <button class="btn-ui" onclick="startMiniGame()" style="border-color: var(--blue);">МИНИ-ИГРА</button>
+</div>
 
 <div class="modal-overlay" id="modal" onclick="if(event.target == this) toggleShop(false)">
   <div class="shop-window">
     <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x: auto; padding-bottom: 5px;">
         <button class="btn-ui" onclick="renderShop('sounds')">ЗВУКИ</button>
         <button class="btn-ui" onclick="renderShop('wallpapers')">ОБОИ</button>
-        <button class="btn-ui" style="color:var(--blue)" onclick="renderShop('buffs')">БАФФЫ</button>
+        <button class="btn-ui" onclick="renderShop('buffs')">БАФФЫ</button>
     </div>
     <div id="shop-content" class="grid"></div>
   </div>
 </div>
 
-<div id="game-container">
-    <div style="position:absolute; top:20px; width:100%; text-align:center; color:var(--blue); font-size:24px; font-weight:900;">🦈 +100 ЗА ТРУБУ: <span id="game-score">0</span></div>
-    <canvas id="game-canvas"></canvas>
-</div>
-
-<div class="main-screen" id="main">
-  <h1 style="font-size:100px; margin-bottom:30px; letter-spacing:-5px; font-style: italic;">КЛИК!</h1>
-  <button id="crushBtn">CRUSH</button>
-</div>
+<button id="crushBtn">CRUSH</button>
 
 <script>
-  // --- ВСЕ ФОТО И ЗВУКИ ---
   const FOLDERS = {
     sounds: [
-      { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
-      { id: "s2", n: "БАЛГАРКА", p: 1000, inc: 50, f: "sound2.mp3" },
-      { id: "s3", n: "МУСЛИМ", p: 5000, inc: 150, f: "sound3.mp3" },
-      { id: "s4", n: "ОТХУЯРЮ", p: 15000, inc: 450, f: "sound4.mp3" },
-      { id: "s5", n: "ПИСЮН", p: 50000, inc: 1200, f: "sound5.mp3" },
-      { id: "s6", n: "ГАДАЛКА", p: 200000, inc: 4000, f: "sound6.mp3" },
-      { id: "s7", n: "ВАДИМ", p: 1000000, inc: 10000, f: "sound7.mp3" },
-      { id: "s8", n: "ЦИГАНЕ", p: 2500000, inc: 25000, f: "sound8.mp3" },
-      { id: "s9", n: "НАХУЙ", p: 6000000, inc: 60000, f: "sound9.mp3" },
-      { id: "s10", n: "НЕ ХОЧЕШЬ", p: 12000000, inc: 150000, f: "sound10.mp3" },
-      { id: "s11", n: "ВЫРЯДИЛСЯ", p: 30000000, inc: 400000, f: "sound11.mp3" },
-      { id: "s12", n: "ГАНДОН", p: 100000000, inc: 1000000, f: "sound12.mp3" }
+        { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
+        { id: "s2", n: "БАЛГАРКА", p: 1000, inc: 50, f: "sound2.mp3" },
+        { id: "s3", n: "МУСЛИМ", p: 5000, inc: 150, f: "sound3.mp3" },
+        { id: "s4", n: "ОТХУЯРЮ", p: 15000, inc: 450, f: "sound4.mp3" },
+        { id: "s5", n: "ПИСЮН", p: 50000, inc: 1200, f: "sound5.mp3" },
+        { id: "s6", n: "ГАДАЛКА", p: 200000, inc: 4000, f: "sound6.mp3" },
+        { id: "s7", n: "ВАДИМ", p: 1000000, inc: 10000, f: "sound7.mp3" },
+        { id: "s8", n: "ЦИГАНЕ", p: 2500000, inc: 25000, f: "sound8.mp3" },
+        { id: "s9", n: "НАХУЙ", p: 6000000, inc: 60000, f: "sound9.mp3" },
+        { id: "s10", n: "НЕ ХОЧЕШЬ", p: 12000000, inc: 150000, f: "sound10.mp3" },
+        { id: "s11", n: "ВЫРЯДИЛСЯ", p: 30000000, inc: 400000, f: "sound11.mp3" },
+        { id: "s12", n: "ГАНДОН", p: 100000000, inc: 1000000, f: "sound12.mp3" }
     ],
     wallpapers: [
-      { id: "w1", n: "ПУСТОТА", p: 0, f: "" },
-      { id: "w2", n: "БРИГАДА", p: 1000, f: "photo_7_2026-02-01_23-17-09.jpg" },
-      { id: "w3", n: "БРАТКИ", p: 3000, f: "photo_14_2026-02-01_23-17-09.jpg" },
-      { id: "w4", n: "ГРЯЗЬ", p: 6000, f: "photo_13_2026-02-01_23-17-09.jpg" },
-      { id: "w5", n: "СПЕЦ", p: 12000, f: "photo_12_2026-02-01_23-17-09.jpg" },
-      { id: "w6", n: "ШОК", p: 25000, f: "photo_11_2026-02-01_23-17-09.jpg" },
-      { id: "w7", n: "ДЕВУШКА", p: 50000, f: "photo_10_2026-02-01_23-17-09.jpg" },
-      { id: "w8", n: "РЫБАК", p: 100000, f: "photo_9_2026-02-01_23-17-09.jpg" },
-      { id: "w9", n: "МАЙКА", p: 250000, f: "photo_8_2026-02-01_23-17-09.jpg" },
-      { id: "w10", n: "СПОРТ", p: 500000, f: "photo_6_2026-02-01_23-17-09.jpg" },
-      { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5_2026-02-01_23-17-09.jpg" },
-      { id: "w12", n: "СКЛАД", p: 2500000, f: "image_24be59.png" },
-      { id: "w13", n: "ЭЛИТА 1", p: 7000000, f: "photo_14_2026-02-01_23-17-09.jpg" },
-      { id: "w14", n: "ЭЛИТА 2", p: 15000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
-      { id: "w15", n: "БОСС", p: 50000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
+        { id: "w1", n: "ПУСТОТА", p: 0, f: "" },
+        { id: "w2", n: "БРИГАДА", p: 1000, f: "photo_7_2026-02-01_23-17-09.jpg" },
+        { id: "w3", n: "БРАТКИ", p: 3000, f: "photo_14_2026-02-01_23-17-09.jpg" },
+        { id: "w4", n: "ГРЯЗЬ", p: 6000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+        { id: "w5", n: "СПЕЦ", p: 12000, f: "photo_12_2026-02-01_23-17-09.jpg" },
+        { id: "w6", n: "ШОК", p: 25000, f: "photo_11_2026-02-01_23-17-09.jpg" },
+        { id: "w7", n: "ДЕВУШКА", p: 50000, f: "photo_10_2026-02-01_23-17-09.jpg" },
+        { id: "w8", n: "РЫБАК", p: 100000, f: "photo_9_2026-02-01_23-17-09.jpg" },
+        { id: "w9", n: "МАЙКА", p: 250000, f: "photo_8_2026-02-01_23-17-09.jpg" },
+        { id: "w10", n: "СПОРТ", p: 500000, f: "photo_6_2026-02-01_23-17-09.jpg" },
+        { id: "w11", n: "УШАНКА", p: 1000000, f: "photo_5_2026-02-01_23-17-09.jpg" },
+        { id: "w12", n: "СКЛАД", p: 2500000, f: "image_24be59.png" },
+        { id: "w13", n: "ЭЛИТА 1", p: 7000000, f: "photo_14_2026-02-01_23-17-09.jpg" },
+        { id: "w14", n: "ЭЛИТА 2", p: 15000000, f: "photo_13_2026-02-01_23-17-09.jpg" },
+        { id: "w15", n: "БОСС", p: 50000000, f: "photo_7_2026-02-01_23-17-09.jpg" }
     ],
     buffs: [
-      { id: "b2", n: "BOOST x2", p: 500, mult: 2 },
-      { id: "b3", n: "BOOST x3", p: 1500, mult: 3 },
-      { id: "b4", n: "BOOST x4", p: 2500, mult: 4 },
-      { id: "b5", n: "BOOST x5", p: 4500, mult: 5 }
+      { id: "b2", n: "БУСТ x2", p: 500, mult: 2 },
+      { id: "b3", n: "БУСТ x3", p: 1500, mult: 3 },
+      { id: "b5", n: "БУСТ x5", p: 5000, mult: 5 },
+      { id: "b10", n: "БУСТ x10", p: 20000, mult: 10 },
+      { id: "b50", n: "БУСТ x50", p: 100000, mult: 50 }
     ]
   };
 
-  let state = JSON.parse(localStorage.getItem('game_sonal_ultra')) || {
-    balance: 0, sharks: 0, currentSound: "s1", currentWallpaper: "w1", currentMult: 1, inv: ["s1", "w1"], income: 10
+  let state = JSON.parse(localStorage.getItem('batya_p_final')) || {
+    balance: 0, sharks: 0, currentSound: "s1", currentWp: "w1", inv: ["s1", "w1"], income: 10, activeBuff: 1, buffEndTime: 0
   };
 
-  let clickTimes = [], clickAudio = null;
+  const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = 0.15;
+  let musicEnabled = false;
+  let effAudio = new Audio();
 
-  function save() { localStorage.setItem('game_sonal_ultra', JSON.stringify(state)); }
+  function save() { localStorage.setItem('batya_p_final', JSON.stringify(state)); }
 
   function updateVisuals() {
     document.getElementById('bal').innerText = Math.floor(state.balance).toLocaleString();
     document.getElementById('sharks').innerText = state.sharks.toLocaleString();
-    document.getElementById('mult-view').innerText = "x" + state.currentMult;
-    const wp = FOLDERS.wallpapers.find(w => w.id === state.currentWallpaper);
+    const wp = FOLDERS.wallpapers.find(w => w.id === state.currentWp);
     document.body.style.backgroundImage = wp && wp.f ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${wp.f})` : "none";
+
+    let now = Date.now();
+    if (state.buffEndTime > now) {
+      let left = Math.ceil((state.buffEndTime - now) / 1000);
+      let m = Math.floor(left / 60), s = left % 60;
+      document.getElementById('buff-timer').style.display = 'block';
+      document.getElementById('buff-timer').innerText = `БАФФ: ${m}:${s < 10 ? '0' + s : s}`;
+      document.getElementById('mult-view').innerText = "x" + state.activeBuff;
+    } else {
+      state.activeBuff = 1;
+      document.getElementById('buff-timer').style.display = 'none';
+      document.getElementById('mult-view').innerText = "x1";
+    }
+  }
+
+  function toggleMusic() {
+    musicEnabled = !musicEnabled;
+    if (musicEnabled) { bgMusic.play(); document.getElementById('musicToggle').innerText = "МУЗЫКА: ВКЛ"; }
+    else { bgMusic.pause(); document.getElementById('musicToggle').innerText = "МУЗЫКА: ВЫКЛ"; }
   }
 
   function toggleShop(open) {
     const m = document.getElementById('modal');
-    if(open) { m.style.display = 'flex'; setTimeout(() => m.classList.add('active'), 10); renderShop('sounds'); }
-    else { m.classList.remove('active'); setTimeout(() => m.style.display = 'none', 400); }
+    if(open) { m.classList.add('active'); renderShop('sounds'); }
+    else { m.classList.remove('active'); }
   }
 
   function renderShop(tab) {
     const container = document.getElementById('shop-content');
     container.innerHTML = '';
     FOLDERS[tab].forEach(item => {
-      const isBuff = tab === 'buffs';
       const owned = state.inv.includes(item.id);
-      const active = isBuff ? state.currentMult === item.mult : (tab === 'sounds' ? state.currentSound === item.id : state.currentWallpaper === item.id);
-      let preview = (tab === 'wallpapers' && item.f) ? `<div class="wp-preview" style="background-image:url(${item.f})"></div>` : '';
+      const isCur = (tab === 'sounds' && state.currentSound === item.id) || (tab === 'wallpapers' && state.currentWp === item.id);
       
+      let previewHtml = '';
+      if(tab === 'wallpapers') {
+        if(item.f) {
+          previewHtml = `<div class="wp-preview" style="background-image:url(${item.f})"></div>`;
+        } else {
+          previewHtml = `<div class="wp-preview no-photo">БЕЗ ФОТО</div>`;
+        }
+      }
+
+      let info = tab === 'sounds' ? `ДОХОД: +${item.inc}` : (tab === 'buffs' ? `x${item.mult} (5 МИН)` : 'ОБОИ');
+      let btnText = tab === 'buffs' ? `${item.p} 🦈` : (owned ? (isCur ? "АКТИВНО" : "ВЫБРАТЬ") : item.p);
+
       const card = document.createElement('div');
       card.className = 'item-card';
-      card.innerHTML = `${preview}<b>${item.n}</b><br><small>${isBuff ? '🦈' : '💰'}</small>
-        <button class="buy-btn" style="background:${active ? 'var(--gold)' : (owned || (isBuff && state.currentMult >= item.mult) ? '#444' : 'var(--red)')}; color:${active?'#000':'#fff'}" 
-                onclick="buy('${tab}','${item.id}')">
-          ${active ? 'АКТИВ' : ((owned || (isBuff && state.currentMult >= item.mult)) ? 'ВЫБРАТЬ' : item.p.toLocaleString())}
-        </button>`;
+      card.innerHTML = `${previewHtml}<b>${item.n}</b><br><small style="color:var(--gold)">${info}</small>
+        <button class="buy-btn ${isCur ? 'active-item' : ''}" onclick="buy('${tab}','${item.id}')">${btnText}</button>`;
       container.appendChild(card);
     });
   }
@@ -166,54 +210,42 @@
   window.buy = (tab, id) => {
     const item = FOLDERS[tab].find(x => x.id === id);
     if (tab === 'buffs') {
-      if (state.sharks >= item.p) { state.sharks -= item.p; state.currentMult = item.mult; }
+      if (state.sharks >= item.p && state.activeBuff === 1) {
+        state.sharks -= item.p; state.activeBuff = item.mult; state.buffEndTime = Date.now() + (5 * 60 * 1000);
+        toggleShop(false);
+      } else { alert("Недостаточно акул!"); }
     } else {
       if (state.inv.includes(id)) {
-        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
-        else state.currentWallpaper = id;
+        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; } else { state.currentWp = id; }
       } else if (state.balance >= item.p) {
         state.balance -= item.p; state.inv.push(id);
-        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; }
-        else state.currentWallpaper = id;
+        if(tab === 'sounds') { state.currentSound = id; state.income = item.inc; } else { state.currentWp = id; }
       }
     }
     save(); updateVisuals(); renderShop(tab);
   };
 
-  // --- КЛИКЕР ---
   document.getElementById('crushBtn').onclick = () => {
-    document.documentElement.requestFullscreen?.().catch(() => {});
-    const now = Date.now();
-    clickTimes.push(now);
-    clickTimes = clickTimes.filter(t => t > now - 1000);
-
-    // АНТИЧИТ 15 КПС
-    if (clickTimes.length > 15) {
-      localStorage.clear();
-      new Audio('Читы  бан кемперство  бан.mp3').play();
-      document.getElementById('ban-screen').style.display = 'block';
-      document.getElementById('main').style.display = 'none';
-      setTimeout(() => location.reload(), 9000);
-      return;
-    }
-
     const sData = FOLDERS.sounds.find(s => s.id === state.currentSound);
-    if (!clickAudio || clickAudio.src.indexOf(sData.f) === -1) clickAudio = new Audio(sData.f);
-    clickAudio.currentTime = 0; clickAudio.play().catch(() => {});
-
-    state.balance += (state.income * state.currentMult);
+    effAudio.src = sData.f;
+    effAudio.volume = 1.0; 
+    effAudio.currentTime = 0; 
+    effAudio.play();
+    state.balance += (state.income * state.activeBuff);
     updateVisuals(); save();
   };
 
-  // --- МИНИ-ИГРА ---
+  // --- ЛОГИКА ТРУБ ---
   const canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d');
   let gameActive = false, bird, pipes, score, frame;
 
   function startMiniGame() {
     document.getElementById('game-container').style.display = 'block';
-    canvas.width = Math.min(450, window.innerWidth); canvas.height = window.innerHeight;
+    canvas.width = Math.min(450, window.innerWidth);
+    canvas.height = window.innerHeight;
     gameActive = true; score = 0; pipes = []; frame = 0;
-    bird = { x: 50, y: canvas.height/2, v: 0, g: 0.65 };
+    bird = { x: 50, y: canvas.height/2, v: 0, g: 0.5 };
+    document.getElementById('game-score').innerText = "0";
     requestAnimationFrame(gameLoop);
   }
 
@@ -221,21 +253,27 @@
     if(!gameActive) return;
     ctx.clearRect(0,0,canvas.width, canvas.height);
     bird.v += bird.g; bird.y += bird.v;
-    if(frame % 90 === 0) pipes.push({ x: canvas.width, y: Math.random()*(canvas.height-350)+175, gap: 180, passed: false });
-    pipes.forEach(p => {
-      p.x -= 4.2; ctx.fillStyle = "#00d4ff";
-      ctx.fillRect(p.x, 0, 60, p.y - p.gap/2); ctx.fillRect(p.x, p.y + p.gap/2, 60, canvas.height);
+    if(frame % 90 === 0) {
+      pipes.push({ x: canvas.width, y: Math.random()*(canvas.height-400)+200, gap: 250, passed: false });
+    }
+    pipes.forEach((p, i) => {
+      p.x -= 4.5;
+      ctx.fillStyle = "#00d4ff";
+      ctx.fillRect(p.x, 0, 75, p.y - p.gap/2);
+      ctx.fillRect(p.x, p.y + p.gap/2, 75, canvas.height);
       if(!p.passed && p.x < bird.x) { p.passed = true; score++; state.sharks += 100; save(); updateVisuals(); document.getElementById('game-score').innerText = score; }
-      if(bird.x+25 > p.x && bird.x < p.x+60 && (bird.y < p.y-p.gap/2 || bird.y+25 > p.y+p.gap/2)) gameActive = false;
+      if(bird.x+20 > p.x && bird.x < p.x+75 && (bird.y < p.y-p.gap/2 || bird.y+25 > p.y+p.gap/2)) gameActive = false;
+      if(p.x < -80) pipes.splice(i, 1);
     });
     ctx.fillStyle = "yellow"; ctx.fillRect(bird.x, bird.y, 25, 25);
     if(bird.y > canvas.height || bird.y < 0) gameActive = false;
-    if(!gameActive) setTimeout(() => { document.getElementById('game-container').style.display = 'none'; }, 1000);
+    if(!gameActive) { setTimeout(() => { document.getElementById('game-container').style.display = 'none'; }, 1000); } 
     else { frame++; requestAnimationFrame(gameLoop); }
   }
 
-  document.getElementById('game-container').onclick = () => { if(gameActive) bird.v = -10; };
+  document.getElementById('game-container').onclick = () => { if(gameActive) bird.v = -8; };
 
+  setInterval(updateVisuals, 1000);
   updateVisuals();
 </script>
 </body>
