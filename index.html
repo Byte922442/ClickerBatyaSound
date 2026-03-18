@@ -37,6 +37,7 @@
     .buy.active-i { background: var(--gold); color: #000; }
 
     #game-cnt { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; }
+    canvas { display: block; }
   </style>
 </head>
 <body>
@@ -77,7 +78,6 @@
 <script>
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
-  // ДАННЫЕ (НЕ ИЗМЕНЯЛИСЬ)
   const DATA = {
     sounds: [
       { id: "s1", n: "УДАР", p: 0, inc: 10, f: "sounds.mp3" },
@@ -156,14 +156,24 @@
     }
   };
 
+  // ИСПРАВЛЕННАЯ ФУНКЦИЯ КЛИКА
   document.getElementById('crushBtn').onclick = () => {
     const sData = DATA.sounds.find(s => s.id === state.cS);
-    const sound = eff.cloneNode(); sound.src = sData.f; sound.play().catch(()=>{});
+    
+    // Если путь к файлу изменился — меняем src
+    if (eff.getAttribute('src') !== sData.f) {
+        eff.src = sData.f;
+    }
+    
+    // Перезапуск звука: стоп и в начало
+    eff.pause();
+    eff.currentTime = 0;
+    eff.play().catch(()=>{});
+
     state.bal += state.inc * state.aB;
     uV(); save();
   };
 
-  // МИНИ-ИГРА: ПТИЧКА И ТРУБЫ
   const cvs = document.getElementById('g-c'), ctx = cvs.getContext('2d');
   let gA = false, brd, ps, sc, f;
 
@@ -195,4 +205,5 @@
   uV();
 </script>
 </body>
-</html>
+  </html>
+  
